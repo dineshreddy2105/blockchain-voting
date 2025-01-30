@@ -5,12 +5,17 @@ contract Voting {
     address public chairperson;
     mapping(address => bool) public hasVoted;
     mapping(address => uint256) public votes;
-    mapping(uint256 => uint256) public candidateVotes; // Store votes directly
     string[] public candidates;
+    address[] public voters; // Stores the addresses of voters
     uint256 public candidateCount;
 
-    event VoteCast(address indexed voter, uint256 candidateIndex);
-    event VoterAdded(address indexed voter);
+    event VoteCast(address voter, uint256 candidateIndex);
+    event CandidateAdded(string name);
+
+    modifier onlyChairperson() {
+        require(msg.sender == chairperson, "Only the chairperson can perform this action.");
+        _;
+    }
 
     constructor(string[] memory _candidates) {
         chairperson = msg.sender;
@@ -20,33 +25,37 @@ contract Voting {
         }
     }
 
-    function addVoter(address _voter) public onlyChairperson {
-        emit VoterAdded(_voter);
+    function addCandidate(string memory _name) public onlyChairperson {
+        candidates.push(_name);
+        candidateCount++;
+        emit CandidateAdded(_name);
     }
 
     function vote(uint256 _candidateIndex) public {
         require(!hasVoted[msg.sender], "You have already voted.");
         require(_candidateIndex < candidateCount, "Invalid candidate index.");
-
+        
         votes[msg.sender] = _candidateIndex;
         hasVoted[msg.sender] = true;
-        candidateVotes[_candidateIndex]++; // Increment candidate's vote count
-
+        voters.push(msg.sender); // Store voter address
+        
         emit VoteCast(msg.sender, _candidateIndex);
     }
 
     function getCandidateVotes(uint256 _candidateIndex) public view returns (uint256) {
         require(_candidateIndex < candidateCount, "Invalid candidate index.");
-        return candidateVotes[_candidateIndex]; // Directly return count
+        
+        uint256 voteCount = 0;
+        for (uint i = 0; i < voters.length; i++) {
+            if (votes[voters[i]] == _candidateIndex) {
+                voteCount++;
+            }
+        }
+        return voteCount;
     }
 
     function getCandidateName(uint256 _index) public view returns (string memory) {
         require(_index < candidateCount, "Invalid candidate index");
         return candidates[_index];
-    }
-
-    modifier onlyChairperson() {
-        require(msg.sender == chairperson, "Only the chairperson can perform this action.");
-        _;
     }
 }
