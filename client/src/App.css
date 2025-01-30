@@ -1,0 +1,90 @@
+/* App.css */
+.app-container {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+}
+
+.app-title {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.metamask-instructions,
+.voting-section,
+.results-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 400px;
+    max-width: 90%;
+    box-sizing: border-box;
+}
+
+.voting-title,
+.results-title {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.candidates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.candidate-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.candidate-radio {
+    margin-right: 10px;
+}
+
+.candidate-name {
+    font-size: 16px;
+}
+
+.vote-button,
+.install-metamask-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.vote-button:hover,
+.install-metamask-button:hover {
+    background-color: #0056b3;
+}
+
+.voted-message,
+.error-message {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.voted-message {
+    color: green;
+}
+
+.error-message {
+    color: red;
+}
+
+.results-list {
+    list-style: none;
+    padding: 0;
+}
