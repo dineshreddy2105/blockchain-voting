@@ -1,153 +1,38 @@
-/* Global Styles */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #121212;
-    color: #ffffff;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+.App {
+  text-align: center;
 }
 
-/* Main App Container */
-.app-container {
-    width: 90%;
-    max-width: 600px;
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-/* Title */
-.app-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #00c8ff;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
-/* Error Messages */
-.error-message {
-    background: #ff4d4d;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-weight: bold;
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-/* Buttons */
-button {
-    background: #00c8ff;
-    color: #121212;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
+.App-link {
+  color: #61dafb;
 }
 
-button:hover {
-    background: #0099cc;
-}
-
-button:disabled {
-    background: #555;
-    cursor: not-allowed;
-}
-
-/* Input Fields */
-input[type="text"] {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #555;
-    background: #252525;
-    color: white;
-}
-
-/* Admin Section */
-.admin-section {
-    background: #222;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-/* Voting Section */
-.voting-section {
-    margin-top: 20px;
-    background: #252525;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-.voting-subsection {
-    margin-top: 20px;
-    padding: 15px;
-    background: #222;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-}
-
-.candidate {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.candidate span {
-    font-size: 1.65em; /* Adjust the size as needed */
-}
-
-.voting-section h2 {
-    color: #00c8ff;
-}
-
-/* Radio Button Styles */
-input[type="radio"] {
-    margin-right: 8px;
-}
-
-/* Voted Message */
-.voted-message {
-    font-weight: bold;
-    color: #00ff00;
-}
-
-/* Results Section */
-.results-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: #252525;
-    border-radius: 8px;
-}
-
-.results-section h2 {
-    color: #00c8ff;
-}
-
-/* List Styling */
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    background: #333;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 5px;
-    font-size: 16px;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
