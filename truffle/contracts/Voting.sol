@@ -17,6 +17,10 @@ contract Voting {
         _;
     }
 
+    // constructor() {
+    //     candidates.push("Hello");
+    // }
+
     constructor(string[] memory _candidates) {
         chairperson = msg.sender;
         candidateCount = _candidates.length;
