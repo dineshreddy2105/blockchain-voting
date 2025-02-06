@@ -3,6 +3,7 @@ import deployContract from "../deployContract";
 import Instructions from "./Instructions";
 import AddCandidates from "./AddCandidates";
 import ManageVoting from "./ManageVoting";
+import RegisterVoters from "./RegisterVoters";
 import "./Sidebar.css";
 import CandidateDetails from "./CandidateDetails";
 
@@ -66,7 +67,7 @@ const AdminPanel = ({ setContractAddress }) => {
               <h1 style={{color : "white"}} className="p-2">Voting App</h1>
               <hr style={{color:"white"}}/>
               <ul className="list-group list-group-flush">
-                {["Instructions", "Candidate Details", "Manage Candidates", "Manage Voting"].map(
+                {["Instructions", "Candidate Details", "Add Candidates", "Register Voters", "Manage Voting"].map(
                   (tab) => (
                     <li
                       key={tab}
@@ -88,7 +89,8 @@ const AdminPanel = ({ setContractAddress }) => {
             <div className="content p-3">
               {activeTab === "Instructions" && <Instructions />}
               {activeTab === "Candidate Details" && <CandidateDetails />}
-              {activeTab === "Manage Candidates" && <AddCandidates />}
+              {activeTab === "Add Candidates" && <AddCandidates />}
+              {activeTab === "Register Voters" && <RegisterVoters />}
               {activeTab === "Manage Voting" && <ManageVoting />}
             </div>
           </div>
