@@ -76,7 +76,7 @@ const AdminPanel = ({ setContractAddress }) => {
         </div>
       </div>
       <div>
-        <div className="content p-3" style={{ width: "80%" }}>
+        <div className="content p-3" style={{ width: "80%", marginLeft: "18%" }}>
           {activeTab === "Instructions" && <Instructions />}
           {activeTab === "Add Candidates" && <AddCandidates />}
           {activeTab === "Manage Voting" && <ManageVoting />}
