@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import '../../styles/UserInstructions.css'; // Import the CSS file
 
 const UserInstructions = () => {
   return (
@@ -34,6 +35,7 @@ const UserInstructions = () => {
         This is the final stage of the whole voting process during which the results of the election will be displayed in the “Result” section.
       </p>
     </div>
-  )
-}
+  );
+};
+
 export default UserInstructions;

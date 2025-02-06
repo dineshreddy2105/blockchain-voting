@@ -63,7 +63,7 @@ const UserPanel = ({ setContractAddress }) => {
         <div className="row">
           <div className="col-md-3 col-lg-2 bg-light vh-100">
             <div className="sidebar">
-              <h1 style={{ color: "white" }} className="p-2">
+              <h1 style={{ color: "white" }} className="p-2 border-0">
                 Voting App
               </h1>
               <hr style={{ color: "white" }} />
