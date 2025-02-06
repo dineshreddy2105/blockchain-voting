@@ -8,7 +8,7 @@ const CandidateDetails = () => {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        // const res = await axios.get("https://api.example.com/candidates"); // Replace with your API URL
+        // const res = await axios.get("http://api.example.com/candidates"); // Replace with your API URL
         // setCandidates(res.data)
         setCandidates([{},{},{},{},{},{}]);
       } catch (error) {
