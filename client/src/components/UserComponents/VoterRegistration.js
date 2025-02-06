@@ -1,7 +1,8 @@
 import React from 'react'
 
-export const VoterRegistration = () => {
+const VoterRegistration = () => {
   return (
     <div>VoterRegistration</div>
   )
 }
+export default VoterRegistration;

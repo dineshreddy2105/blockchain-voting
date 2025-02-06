@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import deployContract from "../../deployContract";
-import Instructions from "./Instructions";
-import AddCandidates from "./AddCandidates";
-import ManageVoting from "./ManageVoting";
-import RegisterVoters from "./RegisterVoters";
-import "./Sidebar.css";
-import CandidateDetails from "./CandidateDetails";
+import UserInstructions from "./UserInstructions";
+import VoterRegistration from "./VoterRegistration";
+import VotingArea from "./VotingArea";
+import Results from "./Results";
 
 const UserPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);
@@ -105,4 +103,4 @@ const UserPanel = ({ setContractAddress }) => {
   );
 };
 
-export default AdminPanel;
+export default UserPanel;
