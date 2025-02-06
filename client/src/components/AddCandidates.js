@@ -4,7 +4,6 @@ import CandidateCard from './CandidateCard';
 const AddCandidates = () => {
   return (
     <div>
-        <CandidateCard/>
     </div>
   )
 }

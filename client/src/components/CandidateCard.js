@@ -15,5 +15,5 @@ const CandidateCard = ({ image, name, age, role, qualification, description, vot
     </div>
   );
 };
-
+;
 export default CandidateCard;
