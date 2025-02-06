@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const VotingArea = () => {
+const VotingArea = () => {
   return (
     <div>VotingArea</div>
   )
 }
+
+export default VotingArea

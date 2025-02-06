@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const UserInstructions = () => {
+const UserInstructions = () => {
   return (
     <div>UserInstructions</div>
   )
 }
+
+export default UserInstructions;
