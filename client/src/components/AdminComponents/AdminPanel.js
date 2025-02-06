@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import deployContract from "../deployContract";
+import deployContract from "../../deployContract";
 import Instructions from "./Instructions";
 import AddCandidates from "./AddCandidates";
 import ManageVoting from "./ManageVoting";

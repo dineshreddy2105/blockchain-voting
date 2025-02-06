@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AdminPanel from "./components/AdminPanel";
+import AdminPanel from "./components/AdminComponents/AdminPanel";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
