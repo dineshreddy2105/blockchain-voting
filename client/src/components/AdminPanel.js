@@ -4,6 +4,7 @@ import Instructions from "./Instructions";
 import AddCandidates from "./AddCandidates";
 import ManageVoting from "./ManageVoting";
 import "./Sidebar.css";
+import CandidateDetails from "./CandidateDetails";
 
 const AdminPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);
@@ -65,7 +66,7 @@ const AdminPanel = ({ setContractAddress }) => {
               <h1 style={{color : "white"}} className="p-2">Voting App</h1>
               <hr style={{color:"white"}}/>
               <ul className="list-group list-group-flush">
-                {["Instructions", "Manage Candidates", "Manage Voting"].map(
+                {["Instructions", "Candidate Details", "Manage Candidates", "Manage Voting"].map(
                   (tab) => (
                     <li
                       key={tab}
@@ -86,6 +87,7 @@ const AdminPanel = ({ setContractAddress }) => {
           <div className="col-md-9 col-lg-10">
             <div className="content p-3">
               {activeTab === "Instructions" && <Instructions />}
+              {activeTab === "Candidate Details" && <CandidateDetails />}
               {activeTab === "Manage Candidates" && <AddCandidates />}
               {activeTab === "Manage Voting" && <ManageVoting />}
             </div>
