@@ -1,7 +1,7 @@
 import React from 'react'
 import CandidateCard from './CandidateCard';
 
-const Add_Candidates = () => {
+const AddCandidates = () => {
   return (
     <div>
         <CandidateCard/>
@@ -9,4 +9,4 @@ const Add_Candidates = () => {
   )
 }
 
-export default Add_Candidates;
+export default AddCandidates;
