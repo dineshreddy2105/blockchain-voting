@@ -1,9 +1,10 @@
 import React from 'react'
+import CandidateCard from './CandidateCard';
 
 const Add_Candidates = () => {
   return (
     <div>
-        Adding candidates
+        <CandidateCard/>
     </div>
   )
 }
