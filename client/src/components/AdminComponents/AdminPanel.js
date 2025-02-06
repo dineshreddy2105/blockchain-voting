@@ -4,8 +4,8 @@ import Instructions from "./Instructions";
 import AddCandidates from "./AddCandidates";
 import ManageVoting from "./ManageVoting";
 import RegisterVoters from "./RegisterVoters";
-import "./Sidebar.css";
 import CandidateDetails from "./CandidateDetails";
+import "../Sidebar.css";
 
 const AdminPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);

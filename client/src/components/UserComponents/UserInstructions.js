@@ -5,5 +5,4 @@ const UserInstructions = () => {
     <div>UserInstructions</div>
   )
 }
-
 export default UserInstructions;

@@ -5,5 +5,4 @@ const VoterRegistration = () => {
     <div>VoterRegistration</div>
   )
 }
-
-export default VoterRegistration
+export default VoterRegistration;

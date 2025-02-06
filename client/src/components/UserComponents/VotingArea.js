@@ -5,5 +5,4 @@ const VotingArea = () => {
     <div>VotingArea</div>
   )
 }
-
-export default VotingArea
+export default VotingArea;
