@@ -3,7 +3,7 @@ import React from 'react'
 const Manual = () => {
   return (
     <div>
-      Hello World
+      Hello World!
     </div>
   )
 }
