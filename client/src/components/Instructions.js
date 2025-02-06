@@ -1,7 +1,7 @@
 import React from 'react';
 import './Instructions.css'; // Assuming you have a CSS file for styling
 
-const Manual = () => {
+const Instructions = () => {
   return (
     <div className="container">
       <h1>Admin Manual</h1>
@@ -61,4 +61,4 @@ const Manual = () => {
   );
 };
 
-export default Manual;
+export default Instructions;

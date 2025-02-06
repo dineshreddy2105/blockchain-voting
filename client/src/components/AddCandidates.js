@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Add_Candidates = () => {
+const AddCandidates = () => {
   return (
     <div>
         Adding candidates
@@ -8,4 +8,4 @@ const Add_Candidates = () => {
   )
 }
 
-export default Add_Candidates;
+export default AddCandidates;

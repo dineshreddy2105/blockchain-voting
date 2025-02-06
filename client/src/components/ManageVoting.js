@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Manage_Voting = () => {
+const ManageVoting = () => {
   return (
     <div>
       Managing Voting
@@ -8,4 +8,4 @@ const Manage_Voting = () => {
   )
 }
 
-export default Manage_Voting;
+export default ManageVoting;
