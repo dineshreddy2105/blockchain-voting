@@ -10,7 +10,7 @@ function App() {
 
     return (
       <Router>
-        <div className="container mt-4">
+        <div className="container-fluid">
           <Routes>
             <Route path="/admin" element={<AdminPanel setContractAddress={setContractAddress} />} />
             <Route path="/voter" element={<UserPanel />} />

@@ -85,7 +85,7 @@ const UserPanel = ({ setContractAddress }) => {
                   </li>
                 ))}
               </ul>
-              <button onClick={handleLogout}>Logout</button>
+              <button className="btn btn-primary m-3 " onClick={handleLogout}>Logout</button>
             </div>
           </div>
 
