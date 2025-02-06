@@ -57,7 +57,7 @@ const AdminPanel = ({ setContractAddress }) => {
   // );
 
   const [activeTab, setActiveTab] = useState("Instructions");
-
+  function handleLogout() {}
   return (
     <>
       <div className="container-fluid">
@@ -81,6 +81,7 @@ const AdminPanel = ({ setContractAddress }) => {
                   )
                 )}
               </ul>
+              <button className="btn btn-primary m-3 " onClick={handleLogout}>Logout</button>
             </div>
           </div>
 
