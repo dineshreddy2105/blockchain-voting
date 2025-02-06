@@ -60,11 +60,12 @@ const AdminPanel = ({ setContractAddress }) => {
     <>
       <div className="container-fluid">
         <div className="row">
-          {/* Sidebar (20% width) */}
           <div className="col-md-3 col-lg-2 bg-light vh-100">
             <div className="sidebar">
+              <h1 style={{color : "white"}} className="p-2">Voting App</h1>
+              <hr style={{color:"white"}}/>
               <ul className="list-group list-group-flush">
-                {["Instructions", "Add Candidates", "Manage Voting"].map(
+                {["Instructions", "Manage Candidates", "Manage Voting"].map(
                   (tab) => (
                     <li
                       key={tab}
@@ -85,7 +86,7 @@ const AdminPanel = ({ setContractAddress }) => {
           <div className="col-md-9 col-lg-10">
             <div className="content p-3">
               {activeTab === "Instructions" && <Instructions />}
-              {activeTab === "Add Candidates" && <AddCandidates />}
+              {activeTab === "Manage Candidates" && <AddCandidates />}
               {activeTab === "Manage Voting" && <ManageVoting />}
             </div>
           </div>
