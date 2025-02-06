@@ -58,28 +58,37 @@ const AdminPanel = ({ setContractAddress }) => {
 
   return (
     <>
-      <div className="" style={{ width: "20%" }}>
-        <div className="sidebar">
-          <ul className="list-group list-group-flush">
-            {["Instructions", "Add Candidates", "Manage Voting"].map((tab) => (
-              <li
-                key={tab}
-                className={`list-group-item ${
-                  activeTab === tab ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div>
-        <div className="content p-3" style={{ width: "80%" }}>
-          {activeTab === "Instructions" && <Instructions />}
-          {activeTab === "Add Candidates" && <AddCandidates />}
-          {activeTab === "Manage Voting" && <ManageVoting />}
+      <div className="container-fluid">
+        <div className="row">
+          {/* Sidebar (20% width) */}
+          <div className="col-md-3 col-lg-2 bg-light vh-100">
+            <div className="sidebar">
+              <ul className="list-group list-group-flush">
+                {["Instructions", "Add Candidates", "Manage Voting"].map(
+                  (tab) => (
+                    <li
+                      key={tab}
+                      className={`list-group-item ${
+                        activeTab === tab ? "active" : ""
+                      }`}
+                      onClick={() => setActiveTab(tab)}
+                    >
+                      {tab}
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          </div>
+
+          {/* Main Content (80% width) */}
+          <div className="col-md-9 col-lg-10">
+            <div className="content p-3">
+              {activeTab === "Instructions" && <Instructions />}
+              {activeTab === "Add Candidates" && <AddCandidates />}
+              {activeTab === "Manage Voting" && <ManageVoting />}
+            </div>
+          </div>
         </div>
       </div>
     </>
