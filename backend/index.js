@@ -1,0 +1,23 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+require("dotenv").config();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+const app = express();
+
+
+app.use(cookieParser());
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '100mb' }));
+app.use(express.json());
+app.use(cors());
+
+const port = process.env.PORT;
+const uri = process.env.DBURI;
+
+mongoose.connect(uri)
+  .then(() => console.log("MongoDB connection successful"))
+  .catch(err => console.error("MongoDB connection error:", err));
+app.listen(port, () => console.log(`Server listening on port ${port}`));

@@ -10,11 +10,11 @@ function App() {
 
     return (
       <Router>
-        <div className="container-fluid m-0">
+        <div className="container-fluid">
           <Routes>
             <Route path="/admin" element={<AdminPanel setContractAddress={setContractAddress} />} />
             <Route path="/voter" element={<UserPanel />} />
-            <Route path="*" element={<Navigate to="/admin" />} />
+            <Route path="*" element={<Navigate to="/voter" />} />
           </Routes>
         </div>
       </Router>

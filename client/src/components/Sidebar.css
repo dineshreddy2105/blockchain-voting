@@ -1,6 +1,6 @@
 /* Sidebar Container */
 .sidebar {
-    width: auto;
+  width: 250px;
     height: 100vh;
     position: fixed;
     top: 0;
