@@ -5,6 +5,7 @@ import AddCandidates from "./AddCandidates";
 import ManageVoting from "./ManageVoting";
 import RegisterVoters from "./RegisterVoters";
 import CandidateDetails from "./CandidateDetails";
+import LiveMonitoring from "./LiveMonitoring";
 import "../Sidebar.css";
 
 const AdminPanel = ({ setContractAddress }) => {
@@ -57,17 +58,17 @@ const AdminPanel = ({ setContractAddress }) => {
   // );
 
   const [activeTab, setActiveTab] = useState("Instructions");
-
+  function handleLogout() {}
   return (
     <>
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-3 col-lg-2 bg-light vh-100">
             <div className="sidebar">
-              <h1 style={{color : "white"}} className="p-2">Voting App</h1>
+              <h1 style={{color : "white"}} className="p-2 border-0">Voting App</h1>
               <hr style={{color:"white"}}/>
               <ul className="list-group list-group-flush">
-                {["Instructions", "Candidate Details", "Add Candidates", "Register Voters", "Manage Voting"].map(
+                {["Instructions", "Candidate Details", "Add Candidates", "Register Voters", "Manage Voting", "Live Monitoring"].map(
                   (tab) => (
                     <li
                       key={tab}
@@ -81,6 +82,7 @@ const AdminPanel = ({ setContractAddress }) => {
                   )
                 )}
               </ul>
+              <button className="btn btn-primary m-3 " onClick={handleLogout}>Logout</button>
             </div>
           </div>
 
@@ -92,6 +94,7 @@ const AdminPanel = ({ setContractAddress }) => {
               {activeTab === "Add Candidates" && <AddCandidates />}
               {activeTab === "Register Voters" && <RegisterVoters />}
               {activeTab === "Manage Voting" && <ManageVoting />}
+              {activeTab === "Live Monitoring" && <LiveMonitoring />}
             </div>
           </div>
         </div>
