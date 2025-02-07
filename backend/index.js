@@ -1,10 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
+const userRoutes = require("./routes/routes.user") 
 const app = express();
 
 
@@ -20,4 +21,7 @@ const uri = process.env.DBURI;
 mongoose.connect(uri)
   .then(() => console.log("MongoDB connection successful"))
   .catch(err => console.error("MongoDB connection error:", err));
+
+app.use("/api/users",userRoutes)
+
 app.listen(port, () => console.log(`Server listening on port ${port}`));
