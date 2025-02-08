@@ -1,5 +1,5 @@
 import React from 'react';
-import './Instructions.css'; // Assuming you have a CSS file for styling
+import '../../styles/Instructions.css'; // Assuming you have a CSS file for styling
 
 const Instructions = () => {
   return (

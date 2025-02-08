@@ -4,7 +4,7 @@ import UserInstructions from "./UserInstructions";
 import VoterRegistration from "./VoterRegistration";
 import VotingArea from "./VotingArea";
 import Results from "./Results";
-import "../Sidebar.css";
+import "../../styles/Sidebar.css";
 
 const UserPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);

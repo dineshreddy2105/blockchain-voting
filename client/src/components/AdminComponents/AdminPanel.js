@@ -7,7 +7,7 @@ import ManageElection from "./ManageElection";
 import RegisterVoters from "./RegisterVoters";
 import CandidateDetails from "./CandidateDetails";
 import LiveMonitoring from "./LiveMonitoring";
-import "../Sidebar.css";
+import "../../styles/Sidebar.css";
 
 const AdminPanel = ({ setContractAddress }) => {
   const [activeTab, setActiveTab] = useState("Instructions");
