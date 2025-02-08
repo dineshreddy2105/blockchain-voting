@@ -3,7 +3,7 @@ import deployContract from "../../deployContract";
 import Instructions from "./Instructions";
 import ElectionDetails from "./ElectionDetails";
 import AddCandidates from "./AddCandidates";
-import ManageVoting from "./ManageVoting";
+import ManageElection from "./ManageElection";
 import RegisterVoters from "./RegisterVoters";
 import CandidateDetails from "./CandidateDetails";
 import LiveMonitoring from "./LiveMonitoring";
@@ -18,7 +18,7 @@ const AdminPanel = ({ setContractAddress }) => {
     "Candidate Details",
     "Add Candidates",
     "Register Voters",
-    "Manage Voting",
+    "Manage Election",
     "Live Monitoring",
   ];
 
@@ -64,7 +64,7 @@ const AdminPanel = ({ setContractAddress }) => {
               {activeTab === "Candidate Details" && <CandidateDetails />}
               {activeTab === "Add Candidates" && <AddCandidates />}
               {activeTab === "Register Voters" && <RegisterVoters />}
-              {activeTab === "Manage Voting" && <ManageVoting />}
+              {activeTab === "Manage Election" && <ManageElection />}
               {activeTab === "Live Monitoring" && <LiveMonitoring />}
             </div>
           </div>

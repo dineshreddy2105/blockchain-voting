@@ -11,9 +11,6 @@
   overflow: hidden;
 }
 
-.sidebar:hover {
-  /* width: 250px; */
-}
 
 .sidebar-content {
   display: flex;
