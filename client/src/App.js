@@ -6,7 +6,7 @@ import Home from "./components/Home";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserLoginPage from "./components/UserComponents/UserLoginPage";
-import SignUpPage from "./components/AdminComponents/SignUpPage";
+import AdminSignInPage from "./components/AdminComponents/AdminSignInPage";
 import UserSignInPage from "./components/UserComponents/UserSignInPage";
 function App() {
   //const [contractAddress, setContractAddress] = useState("");
@@ -19,7 +19,7 @@ function App() {
           <Route path="/user_panel" element={<UserPanel />} />
           <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<UserLoginPage />} />
-          <Route path="/admin-signin" element={<SignUpPage />} />
+          <Route path="/admin-signin" element={<AdminSignInPage />} />
           <Route path="/sign-up" element={<UserSignInPage />} />
         </Routes>
       </div>

@@ -8,7 +8,7 @@ import axios from "axios"; // API requests
 import { toast, ToastContainer } from "react-toastify"; // Import Toastify
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
-const SignUpPage = () => {
+const AdminSignInPage = () => {
   const navigate = useNavigate(); // Initialize navigation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -135,4 +135,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default AdminSignInPage;
