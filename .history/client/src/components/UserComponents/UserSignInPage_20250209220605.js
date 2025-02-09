@@ -86,7 +86,7 @@ const UserLoginPage = () => {
           lg={6}
           className="d-flex flex-column justify-content-center align-items-center p-5"
         >
-          <h2 className="text-center font-weight-bold mb-4">User SignUp</h2>
+          <h2 className="text-center font-weight-bold mb-4">User SignIn</h2>
           <Form
             className="w-100"
             style={{ maxWidth: "400px" }}
