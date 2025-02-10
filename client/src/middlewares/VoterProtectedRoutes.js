@@ -4,13 +4,14 @@ import { useAuth } from "../providers/AuthProvider";
 import { toast } from "react-toastify";
 function VoterProtectedRoute() {
     const { token, role } = useAuth();
-    if (!token || role !== "voter") {
-        toast.error("Please Login", {
-            autoClose: 3000,
+    if (!token || role !== "user") {
+        console.log(token,role)
+        toast.error("you are Unauthorised", {
+            autoClose: 2000,
         });
         setTimeout(() => {
             return <Navigate to="/" />
-        }, 3000);
+        }, 2000);
 
     }
     return <Outlet />

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState,useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from "react-toastify"; // Importing Toastify
 import { jwtDecode } from "jwt-decode";
@@ -25,11 +25,29 @@ const AuthProvider = ({ children }) => {
         return storedRole ? JSON.parse(storedRole) : null
     })
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (token) {
+            const decoded = jwtDecode(token);
+            console.log("Decoded Token Data:", decoded);
+            setAadhar(decoded.aadhar_no);
+            setRole(decoded.role);
+    
+            localStorage.setItem("token", JSON.stringify(token));
+            localStorage.setItem("aadhar", JSON.stringify(decoded.aadhar_no));
+            localStorage.setItem("role", JSON.stringify(decoded.role));
+
+            setTimeout(() => {
+                navigate("/user_panel");
+            }, 2000);
+        }
+    }, [token]);
+
     const loginAction = async (data, role) => {
         if (role === "user") {
             try {
                 console.log("Login action")
-
+                console.log(data)
                 const response = await axios.post(
                     "http://localhost:5000/api/users/login",
                     data
@@ -39,22 +57,6 @@ const AuthProvider = ({ children }) => {
                     toast.success("Login successful! Redirecting...", { autoClose: 2000 });
                     console.log(response.data)
                     setToken(response.data.token)
-                    if (token) {
-                        const decoded = jwtDecode(token);
-                        console.log("Decoded Token Data:", decoded);
-                        setAadhar(decoded.aadhar)
-                        setRole(decoded.role)
-                    } else {
-                        console.log("No token found");
-                    }
-
-                    localStorage.setItem('token', JSON.stringify(response.data.token))
-                    localStorage.setItem('aadhar', JSON.stringify(response.data.aadhar))
-                    localStorage.setItem('role', JSON.stringify(response.data.role))
-                    // Wait for 3 seconds before navigating
-                    setTimeout(() => {
-                        navigate("/user_panel");
-                    }, 2000);
                     return
                 } else {
                     toast.error(response.data.message || "Invalid email or password", {
@@ -75,7 +77,7 @@ const AuthProvider = ({ children }) => {
         else{
             try {
                 console.log("Login action")
-
+                
                 const response = await axios.post(
                     "http://localhost:5000/api/admin/login",
                     data

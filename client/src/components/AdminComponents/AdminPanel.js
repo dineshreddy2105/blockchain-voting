@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import deployContract from "../../deployContract";
 import { useNavigate } from 'react-router-dom'
-
+import { ToastContainer } from "react-toastify";
 import Instructions from "./Instructions";
 import ElectionDetails from "./ElectionDetails";
 import AddCandidates from "./AddCandidates";
@@ -81,6 +81,7 @@ const AdminPanel = ({ setContractAddress }) => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" />
     </>
   );
 };

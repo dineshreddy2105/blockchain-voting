@@ -1,36 +1,61 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // ✅ Import Axios
 import login from "../../Images/blockchain1.svg";
 import { useAuth } from "../../providers/AuthProvider";
 import "../../styles/styles.css";
 import { Button } from "@mui/material";
-// import axios from "axios";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const UserLoginPage = () => {
   const [aadhar_no, setAadhar_no] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState(""); // ✅ Added OTP state
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { loginAction } = useAuth();
 
-  // aadhar_no validation regex
+  // Aadhar number validation regex
   const isValidAadhar_no = (aadhar_no) => /^\d{12}$/.test(aadhar_no);
+
+  // Function to show toast messages
+  const showToast = (message, type = "info") => {
+    toast[type](message, { autoClose: 3000 });
+  };
+
+  // Function to send OTP
+  const handleSendOtp = async () => {
+    if (!aadhar_no) {
+      showToast("Please enter Aadhar number first", "warning");
+      return;
+    }
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/users/send_otp", { aadhar_no });
+      setOtp(data.otp);
+      showToast("OTP sent successfully!", "success");
+    } catch (error) {
+      showToast(error.response?.data?.message || "Failed to send OTP", "error");
+    }
+  };
 
   // Function to validate form fields
   const validateForm = () => {
     let newErrors = {};
     if (!aadhar_no) {
-      newErrors.aadhar_no = "aadhar_no is required";
+      newErrors.aadhar_no = "Aadhar number is required";
     } else if (!isValidAadhar_no(aadhar_no)) {
-      newErrors.aadhar_no = "Invalid aadhar_no format";
+      newErrors.aadhar_no = "Invalid Aadhar number format";
     }
 
     if (!password) {
       newErrors.password = "Password is required";
+    }
+
+    if (!otp) {
+      newErrors.otp = "OTP is required";
     }
 
     setErrors(newErrors);
@@ -39,21 +64,18 @@ const UserLoginPage = () => {
 
   // Function to handle login submission
   const handleSubmit = async (e) => {
+    console.log("handle Submit", e)
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      loginAction({ aadhar_no, password },"user")
-    }
-    catch (err) {
-      // if(err.response.status == 404){
-      //     navigate("/signup")
-      // }
-      console.error(err)
-      return err.response.status
-    }
-    finally {
+      const data = { aadhar_no, password, otp }
+      loginAction(data, "user");
+    } catch (error) {
+      console.log(error)
+      showToast(error.response?.data?.message || "Login failed", "error");
+    } finally {
       setLoading(false);
     }
   };
@@ -81,7 +103,7 @@ const UserLoginPage = () => {
             <Form.Group controlId="formaadhar_no">
               <Form.Control
                 type="text"
-                placeholder="aadhar_no"
+                placeholder="Aadhar Number"
                 className="py-3 shadow-sm bg-light"
                 value={aadhar_no}
                 onChange={(e) => setAadhar_no(e.target.value)}
@@ -105,6 +127,32 @@ const UserLoginPage = () => {
                 {errors.password}
               </Form.Control.Feedback>
             </Form.Group>
+
+            <Row className="mt-3">
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter OTP"
+                  className="py-3 shadow-sm bg-light"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  isInvalid={!!errors.otp}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.otp}
+                </Form.Control.Feedback>
+              </Col>
+              <Col xs="auto">
+                <Button
+                  variant="contained"
+                  className="shadow-sm"
+                  onClick={handleSendOtp}
+                  sx={{ backgroundColor: "#6c4ccf", "&:hover": { backgroundColor: "#5a3bb5" } }}
+                >
+                  Send OTP
+                </Button>
+              </Col>
+            </Row>
 
             <Button
               variant="contained"
@@ -154,7 +202,6 @@ const UserLoginPage = () => {
         </Col>
       </Row>
 
-      {/* Toast Container */}
       <ToastContainer position="top-right" />
     </Container>
   );

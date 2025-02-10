@@ -10,7 +10,7 @@ function AdminProtectedRoute() {
         });
         setTimeout(() => {
             return <Navigate to="/" />
-        }, 3000);
+        }, 2000);
 
     }
     return <Outlet />

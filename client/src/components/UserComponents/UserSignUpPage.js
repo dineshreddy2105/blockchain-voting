@@ -68,15 +68,10 @@ const UserSignUpPage = () => {
         }
       );
 
-<<<<<<< HEAD:client/src/components/UserComponents/UserSignUpPage.js
-      showToast("Signup Successful please login", "success");
-      // loginAction({aadhar_no: aadhar,password},"user")
-=======
       showToast(
         "Registration Successful Please Login with Credentials!",
         "success"
       );
->>>>>>> 4caa0d3ac5f8bb69707ee8c62dcc23dd2201d44a:client/src/components/UserComponents/UserSignInPage.js
 
       // ✅ Store user info in local storage
       localStorage.setItem("userinfo", JSON.stringify(data));
