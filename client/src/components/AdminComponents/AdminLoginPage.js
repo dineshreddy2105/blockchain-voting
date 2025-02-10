@@ -9,9 +9,9 @@ import { toast, ToastContainer } from "react-toastify"; // Import Toastify
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 import { useAuth } from "../../providers/AuthProvider";
 
-const AdminSignInPage = () => {
+const SignUpPage = () => {
+  const navigate = useNavigate();
   const {loginAction} = useAuth();
-  const navigate = useNavigate(); // Initialize navigation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); // To show loading spinner
@@ -118,4 +118,4 @@ const AdminSignInPage = () => {
   );
 };
 
-export default AdminSignInPage;
+export default SignUpPage;

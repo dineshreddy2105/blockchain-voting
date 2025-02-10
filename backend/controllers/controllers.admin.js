@@ -1,5 +1,7 @@
-const Admin = require("../models/models.admin"); // ✅ Ensure this path is correct
-//console.log(Admin);
+const bcrypt = require("bcrypt");
+const Admin = require("../models/models.admin");
+const {createSecretToken} = require("../services/JWTService")
+
 const loginAdmin = async (req, res) => {
   console.log(Admin);
   const { email, password } = req.body;
@@ -20,20 +22,23 @@ const loginAdmin = async (req, res) => {
         .json({ message: "Server error: Password missing" });
     }
 
-    // Compare passwords (Plain-text match)
-    if (admin.password !== password) {
+    const isMatch = await bcrypt.compare(password, admin.password);
+    console.log("Password Match:", isMatch);
+
+    if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
+
+    data = {
+      email: admin.email,
+      name: admin.name,
+      role: "user"
     }
 
+    const token = createSecretToken(data);
     res.status(200).json({
       success: true,
-      message: "Admin login successful",
-      admin: {
-        email: admin.email,
-        name: admin.name,
-        phoneNumber: admin.phoneNumber,
-        role: admin.role,
-      },
+      message: "Login successful",
+      token
     });
   } catch (error) {
     console.error("Admin Login Error:", error);

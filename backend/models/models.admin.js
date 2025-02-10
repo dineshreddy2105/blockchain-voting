@@ -17,21 +17,9 @@ const AdminSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    role: {
-      type: String,
-      enum: ["admin"],
-      default: "admin",
-    },
-  },
-  { timestamps: true }
+    }
+  }
 );
 
-const Admin = mongoose.model("Admin", AdminSchema);
-module.exports = Admin;
+const AdminModel = mongoose.model("admin", AdminSchema);
+module.exports = AdminModel;

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import deployContract from "../../deployContract";
+import { useNavigate } from 'react-router-dom'
+import { ToastContainer } from "react-toastify";
 import Instructions from "./Instructions";
 import ElectionDetails from "./ElectionDetails";
 import AddCandidates from "./AddCandidates";
@@ -8,9 +10,16 @@ import RegisterVoters from "./RegisterVoters";
 import CandidateDetails from "./CandidateDetails";
 import LiveMonitoring from "./LiveMonitoring";
 import "../../styles/Sidebar.css";
+import { toast } from "react-toastify";
+import { useAuth } from "../../providers/AuthProvider";
+
+
 
 const AdminPanel = ({ setContractAddress }) => {
+  const navigate = useNavigate()
+
   const [activeTab, setActiveTab] = useState("Instructions");
+  const { logout } = useAuth();
 
   const tabs = [
     "Instructions",
@@ -22,10 +31,13 @@ const AdminPanel = ({ setContractAddress }) => {
     "Live Monitoring",
   ];
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    console.log("Logged out");
-  };
+  function handleLogout() {
+    logout()
+    toast.success("Logout successful! Redirecting...", { autoClose: 2000 });
+    setTimeout(() => {
+      navigate("/")
+    }, 2000);
+  }
 
   return (
     <>
@@ -41,9 +53,8 @@ const AdminPanel = ({ setContractAddress }) => {
                 {tabs.map((tab) => (
                   <li
                     key={tab}
-                    className={`list-group-item ${
-                      activeTab === tab ? "active" : ""
-                    }`}
+                    className={`list-group-item ${activeTab === tab ? "active" : ""
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}
@@ -70,6 +81,7 @@ const AdminPanel = ({ setContractAddress }) => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" />
     </>
   );
 };

@@ -7,14 +7,17 @@ import { Button } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios"; // ✅ Import Axios
+import { useAuth } from "../../providers/AuthProvider";
 
-const UserLoginPage = () => {
+
+const UserSignUpPage = () => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [aadhar, setAadhar] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [phoneNumber, setPhone] = useState("");
+  const [otp, setOtp] = useState(""); // OTP state
   const [loading, setLoading] = useState(false);
+  const { loginAction } = useAuth();
 
   const navigate = useNavigate();
 
@@ -23,9 +26,25 @@ const UserLoginPage = () => {
     toast[type](message, { autoClose: 3000 });
   };
 
+  const handleSendOtp = async () => {
+    if (!aadhar) {
+      showToast("Please enter Aadhar number first", "warning");
+      return;
+    }
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/users/send_otp", { "aadhar_no" : aadhar });
+      setOtp(data.otp)
+      showToast("OTP sent successfully!", "success");
+    } catch (error) {
+      showToast(error.response?.data?.message || "Failed to send OTP", "error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password || !confirmPassword || !phoneNumber) {
+    // console.log(name,aadhar,password,confirmPassword,otp)
+    if (!name || !aadhar || !password || !confirmPassword || !otp) {
+      // console.log("Error")
       showToast("Please fill all fields", "warning");
       return;
     }
@@ -36,16 +55,16 @@ const UserLoginPage = () => {
     }
 
     setLoading(true);
-
+    // console.log("Hello")
     try {
       // ✅ Send data to backend
       const { data } = await axios.post(
-        "http://localhost:5000/api/users/user_register",
+        "http://localhost:5000/api/users/sign_up",
         {
           name,
-          email,
+          aadhar_no: aadhar,
           password,
-          phoneNumber,
+          otp,
         }
       );
 
@@ -92,23 +111,23 @@ const UserLoginPage = () => {
             style={{ maxWidth: "400px" }}
             onSubmit={handleSubmit}
           >
-            <Form.Group controlId="formName">
+            <Form.Group controlId="formaadhar" className="mt-3">
+              <Form.Control
+                type="text"
+                placeholder="Aadhar Number"
+                className="py-3 shadow-sm bg-light"
+                value={aadhar}
+                onChange={(e) => setAadhar(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formName" className="mt-3">
               <Form.Control
                 type="text"
                 placeholder="Name"
                 className="py-3 shadow-sm bg-light"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formEmail" className="mt-3">
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                className="py-3 shadow-sm bg-light"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Group>
 
@@ -132,15 +151,27 @@ const UserLoginPage = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formPhone" className="mt-3">
-              <Form.Control
-                type="text"
-                placeholder="Phone Number"
-                className="py-3 shadow-sm bg-light"
-                value={phoneNumber}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </Form.Group>
+            <Row className="mt-3">
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter OTP"
+                  className="py-3 shadow-sm bg-light"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              </Col>
+              <Col xs="auto">
+                <Button
+                  variant="contained"
+                  className="shadow-sm"
+                  onClick={handleSendOtp}
+                  sx={{ backgroundColor: "#6c4ccf", "&:hover": { backgroundColor: "#5a3bb5" } }}
+                >
+                  Send OTP
+                </Button>
+              </Col>
+            </Row>
 
             <Button
               variant="contained"
@@ -152,7 +183,7 @@ const UserLoginPage = () => {
                 "&:hover": { backgroundColor: "#5a3bb5" },
               }}
             >
-              {loading ? "Loading..." : "Login"}
+              {loading ? "Loading..." : "Sign Up"}
             </Button>
 
             <Button
@@ -195,4 +226,4 @@ const UserLoginPage = () => {
   );
 };
 
-export default UserLoginPage;
+export default UserSignUpPage;

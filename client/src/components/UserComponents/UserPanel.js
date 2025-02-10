@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import deployContract from "../../deployContract";
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from "../../providers/AuthProvider";
 import UserInstructions from "./UserInstructions";
 import VoterRegistration from "./VoterRegistration";
 import VotingArea from "./VotingArea";
 import Results from "./Results";
 import "../../styles/Sidebar.css";
+import { toast, ToastContainer } from "react-toastify";
+
 
 const UserPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);
@@ -54,9 +58,17 @@ const UserPanel = ({ setContractAddress }) => {
   //     </button>
   //   </div>
   // );
-
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("Instructions");
-  function handleLogout() {}
+  const { logout } = useAuth();
+  function handleLogout() {
+    toast.success("Logout successful! Redirecting...", { autoClose: 2000 });
+    setTimeout(() => {
+      navigate("/")
+      logout()
+    }, 2000);
+    
+  }
   return (
     <>
       <div className="container-fluid">
@@ -106,6 +118,7 @@ const UserPanel = ({ setContractAddress }) => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" />
     </>
   );
 };

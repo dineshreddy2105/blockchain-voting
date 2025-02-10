@@ -1,26 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const {
-  getUserByAadhar,
-  getUserMailByAadhar,
-  SaveUser,
+  // SaveUser,
   registerUser,
   loginUser,
+  userVerification,
 } = require("../controllers/controllers.user");
 
-// Get user by Aadhar ID
-router.get("/:aadharid", getUserByAadhar);
 
-// Get user email by Aadhar ID
-router.get("/mail/:aadharid", getUserMailByAadhar);
 
 // Save a new user
-router.post("/", SaveUser);
+// router.post("/", SaveUser);
+
+//user verification
+router.post("/send_otp",userVerification)
 
 // Register a new user
-router.post("/user_register", registerUser);
+router.post("/sign_up", registerUser);
 
 // User login route
-router.post("/user_login", loginUser);
+router.post("/login", loginUser);
 
 module.exports = router;
