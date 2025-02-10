@@ -68,8 +68,15 @@ const UserSignUpPage = () => {
         }
       );
 
+<<<<<<< HEAD:client/src/components/UserComponents/UserSignUpPage.js
       showToast("Signup Successful please login", "success");
       // loginAction({aadhar_no: aadhar,password},"user")
+=======
+      showToast(
+        "Registration Successful Please Login with Credentials!",
+        "success"
+      );
+>>>>>>> 4caa0d3ac5f8bb69707ee8c62dcc23dd2201d44a:client/src/components/UserComponents/UserSignInPage.js
 
       // ✅ Store user info in local storage
       localStorage.setItem("userinfo", JSON.stringify(data));
@@ -103,7 +110,7 @@ const UserSignUpPage = () => {
           lg={6}
           className="d-flex flex-column justify-content-center align-items-center p-5"
         >
-          <h2 className="text-center font-weight-bold mb-4">User Login</h2>
+          <h2 className="text-center font-weight-bold mb-4">User SignUp</h2>
           <Form
             className="w-100"
             style={{ maxWidth: "400px" }}

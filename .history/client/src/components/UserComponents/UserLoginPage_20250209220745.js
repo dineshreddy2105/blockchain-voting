@@ -2,31 +2,29 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import login from "../../Images/blockchain1.svg";
-import { useAuth } from "../../providers/AuthProvider";
 import "../../styles/styles.css";
 import { Button } from "@mui/material";
-// import axios from "axios";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify"; // Importing Toastify
+import "react-toastify/dist/ReactToastify.css"; // Toastify styles
 
 const UserLoginPage = () => {
-  const [aadhar_no, setAadhar_no] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const { loginAction } = useAuth();
 
-  // aadhar_no validation regex
-  const isValidAadhar_no = (aadhar_no) => /^\d{12}$/.test(aadhar_no);
+  // Email validation regex
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // Function to validate form fields
   const validateForm = () => {
     let newErrors = {};
-    if (!aadhar_no) {
-      newErrors.aadhar_no = "aadhar_no is required";
-    } else if (!isValidAadhar_no(aadhar_no)) {
-      newErrors.aadhar_no = "Invalid aadhar_no format";
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!isValidEmail(email)) {
+      newErrors.email = "Invalid email format";
     }
 
     if (!password) {
@@ -43,17 +41,34 @@ const UserLoginPage = () => {
     if (!validateForm()) return;
 
     setLoading(true);
+
     try {
-      loginAction({ aadhar_no, password },"user")
-    }
-    catch (err) {
-      // if(err.response.status == 404){
-      //     navigate("/signup")
-      // }
-      console.error(err)
-      return err.response.status
-    }
-    finally {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/user_login",
+        { email, password }
+      );
+
+      if (response.status === 200 && response.data.success) {
+        toast.success("Login successful! Redirecting...", { autoClose: 3000 });
+
+        // Wait for 3 seconds before navigating
+        setTimeout(() => {
+          navigate("/user_panel");
+        }, 3000);
+      } else {
+        toast.error(response.data.message || "Invalid email or password", {
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message || "Login failed", {
+          autoClose: 3000,
+        });
+      } else {
+        toast.error("Unable to connect to the server", { autoClose: 3000 });
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -78,17 +93,17 @@ const UserLoginPage = () => {
             style={{ maxWidth: "400px" }}
             onSubmit={handleSubmit}
           >
-            <Form.Group controlId="formaadhar_no">
+            <Form.Group controlId="formEmail">
               <Form.Control
-                type="text"
-                placeholder="aadhar_no"
+                type="email"
+                placeholder="Email"
                 className="py-3 shadow-sm bg-light"
-                value={aadhar_no}
-                onChange={(e) => setAadhar_no(e.target.value)}
-                isInvalid={!!errors.aadhar_no}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                isInvalid={!!errors.email}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.aadhar_no}
+                {errors.email}
               </Form.Control.Feedback>
             </Form.Group>
 

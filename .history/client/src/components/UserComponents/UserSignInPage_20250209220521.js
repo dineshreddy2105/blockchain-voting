@@ -1,61 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import login from "../../Images/blockchain1.svg";
-import { useAuth } from "../../providers/AuthProvider";
 import "../../styles/styles.css";
 import { Button } from "@mui/material";
-// import axios from "axios";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios"; // ✅ Import Axios
 
 const UserLoginPage = () => {
-  const [aadhar_no, setAadhar_no] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phoneNumber, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
-  const { loginAction } = useAuth();
 
-  // aadhar_no validation regex
-  const isValidAadhar_no = (aadhar_no) => /^\d{12}$/.test(aadhar_no);
-
-  // Function to validate form fields
-  const validateForm = () => {
-    let newErrors = {};
-    if (!aadhar_no) {
-      newErrors.aadhar_no = "aadhar_no is required";
-    } else if (!isValidAadhar_no(aadhar_no)) {
-      newErrors.aadhar_no = "Invalid aadhar_no format";
-    }
-
-    if (!password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // ✅ Show toast notifications
+  const showToast = (message, type = "info") => {
+    toast[type](message, { autoClose: 3000 });
   };
 
-  // Function to handle login submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!name || !email || !password || !confirmPassword || !phoneNumber) {
+      showToast("Please fill all fields", "warning");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showToast("Passwords do not match!", "error");
+      return;
+    }
 
     setLoading(true);
+
     try {
-      loginAction({ aadhar_no, password },"user")
-    }
-    catch (err) {
-      // if(err.response.status == 404){
-      //     navigate("/signup")
-      // }
-      console.error(err)
-      return err.response.status
-    }
-    finally {
+      // ✅ Send data to backend
+      const { data } = await axios.post(
+        "http://localhost:5000/api/users/user_register",
+        {
+          name,
+          email,
+          password,
+          phoneNumber,
+        }
+      );
+
+      showToast(
+        "Registration Successful Please Login with Credentials!",
+        "success"
+      );
+
+      // ✅ Store user info in local storage
+      localStorage.setItem("userinfo", JSON.stringify(data));
+
+      setTimeout(() => navigate("/sign-in"), 3000);
+    } catch (error) {
+      showToast(
+        error.response?.data?.message || "Registration Failed",
+        "error"
+      );
+    } finally {
       setLoading(false);
     }
+  };
+
+  const handleSignUp = () => {
+    navigate("/sign-in");
   };
 
   return (
@@ -72,24 +86,30 @@ const UserLoginPage = () => {
           lg={6}
           className="d-flex flex-column justify-content-center align-items-center p-5"
         >
-          <h2 className="text-center font-weight-bold mb-4">User SignIn</h2>
+          <h2 className="text-center font-weight-bold mb-4">User Login</h2>
           <Form
             className="w-100"
             style={{ maxWidth: "400px" }}
             onSubmit={handleSubmit}
           >
-            <Form.Group controlId="formaadhar_no">
+            <Form.Group controlId="formName">
               <Form.Control
                 type="text"
-                placeholder="aadhar_no"
+                placeholder="Name"
                 className="py-3 shadow-sm bg-light"
-                value={aadhar_no}
-                onChange={(e) => setAadhar_no(e.target.value)}
-                isInvalid={!!errors.aadhar_no}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.aadhar_no}
-              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId="formEmail" className="mt-3">
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                className="py-3 shadow-sm bg-light"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId="formPassword" className="mt-3">
@@ -99,11 +119,27 @@ const UserLoginPage = () => {
                 className="py-3 shadow-sm bg-light"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                isInvalid={!!errors.password}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId="formConfirmPassword" className="mt-3">
+              <Form.Control
+                type="password"
+                placeholder="Confirm Password"
+                className="py-3 shadow-sm bg-light"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formPhone" className="mt-3">
+              <Form.Control
+                type="text"
+                placeholder="Phone Number"
+                className="py-3 shadow-sm bg-light"
+                value={phoneNumber}
+                onChange={(e) => setPhone(e.target.value)}
+              />
             </Form.Group>
 
             <Button
@@ -116,13 +152,13 @@ const UserLoginPage = () => {
                 "&:hover": { backgroundColor: "#5a3bb5" },
               }}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Loading..." : "Login"}
             </Button>
 
             <Button
               variant="outlined"
               className="w-100 mt-4 py-3 shadow-sm"
-              onClick={() => navigate("/sign-up")}
+              onClick={handleSignUp}
               sx={{
                 backgroundColor: "#fff",
                 borderColor: "#6c4ccf",
@@ -130,7 +166,7 @@ const UserLoginPage = () => {
                 "&:hover": { backgroundColor: "#6c4ccf", color: "#fff" },
               }}
             >
-              Don't have an account? Sign Up
+              Already have an account? Sign In
             </Button>
           </Form>
         </Col>
@@ -154,7 +190,6 @@ const UserLoginPage = () => {
         </Col>
       </Row>
 
-      {/* Toast Container */}
       <ToastContainer position="top-right" />
     </Container>
   );
