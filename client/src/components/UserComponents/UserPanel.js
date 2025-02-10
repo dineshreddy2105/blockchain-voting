@@ -95,7 +95,13 @@ const UserPanel = ({ setContractAddress }) => {
               {activeTab === "Instructions" && <UserInstructions />}
               {activeTab === "Voter Registration" && <VoterRegistration />}
               {activeTab === "Voting Area" && <VotingArea />}
-              {activeTab === "Results" && <Results />}
+              {activeTab === "Results" && <Results candidates={[
+    { name: "Alice", votes: 120 },
+    { name: "Bob", votes: 95 },
+    { name: "Charlie", votes: 150 }
+  ]} 
+  electionStatus="completed" 
+/>}
             </div>
           </div>
         </div>
