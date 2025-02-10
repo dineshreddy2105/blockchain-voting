@@ -7,9 +7,11 @@ import { Button as MUIButton } from "@mui/material"; // MUI button
 import axios from "axios"; // API requests
 import { toast, ToastContainer } from "react-toastify"; // Import Toastify
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import { useAuth } from "../../providers/AuthProvider";
 
 const SignUpPage = () => {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
+  const {loginAction} = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); // To show loading spinner
@@ -28,34 +30,15 @@ const SignUpPage = () => {
     }
 
     try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-
-      const response = await axios.post(
-        "http://localhost:5000/api/admin/admin_login", // Admin login API
-        { email, password },
-        config
-      );
-
-      toast.success("Admin Login Successful", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-
-      setLoading(false);
-
-      // Redirect to Admin Panel after 2 seconds
-      setTimeout(() => {
-        navigate("/admin_panel");
-      }, 2000);
+      var data = {email,password}
+      loginAction(data,"admin")
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong", {
         position: "top-right",
         autoClose: 3000,
       });
+    }
+    finally{
       setLoading(false);
     }
   };

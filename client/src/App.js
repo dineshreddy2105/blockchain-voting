@@ -3,27 +3,42 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminPanel from "./components/AdminComponents/AdminPanel";
 import UserPanel from "./components/UserComponents/UserPanel";
 import Home from "./components/Home";
+import AuthProvider from "./providers/AuthProvider";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserLoginPage from "./components/UserComponents/UserLoginPage";
-import SignUpPage from "./components/AdminComponents/SignUpPage";
-import UserSignInPage from "./components/UserComponents/UserSignInPage";
+import AdminLoginPage from "./components/AdminComponents/AdminLoginPage";
+import UserSignUpPage from "./components/UserComponents/UserSignUpPage";
+import VoterProtectedRoute from "./middlewares/VoterProtectedRoutes"
+import AdminProtectedRoute from "./middlewares/AdminProtectedRoutes";
+import {ToastContainer} from "react-toastify";
 function App() {
   //const [contractAddress, setContractAddress] = useState("");
 
   return (
+    <>
+    <ToastContainer position="top-right" />
     <Router>
-      <div className="container-fluid">
-        <Routes>
-          <Route path="/admin_panel" element={<AdminPanel />} />
-          <Route path="/user_panel" element={<UserPanel />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/sign-in" element={<UserLoginPage />} />
-          <Route path="/admin-signin" element={<SignUpPage />} />
-          <Route path="/sign-up" element={<UserSignInPage />} />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="container-fluid">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/sign-in" element={<UserLoginPage />} />
+            <Route path="/admin-signin" element={<AdminLoginPage />} />
+            <Route path="/sign-up" element={<UserSignUpPage />} />
+
+            <Route element={<VoterProtectedRoute />}>
+              <Route path="/user_panel" element={<UserPanel />} />
+            </Route>
+
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="/admin_panel" element={<AdminPanel />} />
+            </Route>
+          </Routes>
+        </div>
+      </AuthProvider>
     </Router>
+    </>
   );
 }
 

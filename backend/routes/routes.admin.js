@@ -3,6 +3,6 @@ const { loginAdmin } = require("../controllers/controllers.admin"); // Ensure co
 const router = express.Router();
 //console.log(loginAdmin);
 
-router.post("/admin_login", loginAdmin);
+router.post("/login", loginAdmin);
 
 module.exports = router;

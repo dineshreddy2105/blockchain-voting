@@ -7,6 +7,7 @@ require("dotenv").config();
 
 const userRoutes = require("./routes/routes.user");
 const adminRoutes = require("./routes/routes.admin");
+const aadharRoutes = require("./routes/routes.aadhar")
 const app = express();
 
 app.use(cookieParser());
@@ -25,5 +26,6 @@ mongoose
 //console.log(adminRoutes);
 //console.log(userRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/aadhar",aadharRoutes)
 app.use("/api/admin", adminRoutes);
 app.listen(port, () => console.log(`Server listening on port ${port}`));
