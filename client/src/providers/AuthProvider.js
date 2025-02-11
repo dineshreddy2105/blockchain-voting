@@ -13,8 +13,8 @@ const AuthProvider = ({ children }) => {
         return storedToken ? JSON.parse(storedToken) : null
     })
     const [email, setEmail] = useState(() => {
-        const storedToken = localStorage.getItem('token')
-        return storedToken ? JSON.parse(storedToken) : null
+        const storedEmail = localStorage.getItem('email')
+        return storedEmail ? JSON.parse(storedEmail) : null
     })
     const [aadhar, setAadhar] = useState(() => {
         const storedAadhar = localStorage.getItem('aadhar')
@@ -25,23 +25,6 @@ const AuthProvider = ({ children }) => {
         return storedRole ? JSON.parse(storedRole) : null
     })
     const navigate = useNavigate()
-
-    // useEffect(() => {
-    //     if (token) {
-    //         const decoded = jwtDecode(token);
-    //         console.log("Decoded Token Data:", decoded);
-    //         setAadhar(decoded.aadhar_no);
-    //         setRole(decoded.role);
-
-    //         localStorage.setItem("token", JSON.stringify(token));
-    //         localStorage.setItem("aadhar", JSON.stringify(decoded.aadhar_no));
-    //         localStorage.setItem("role", JSON.stringify(decoded.role));
-
-    //         setTimeout(() => {
-    //             navigate("/user_panel");
-    //         }, 2000);
-    //     }
-    // }, [token]);
 
     const loginAction = async (data, role) => {
         if (role === "user") {
@@ -151,7 +134,7 @@ const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ token, role, aadhar, loginAction, logout }} >
+        <AuthContext.Provider value={{ token, role, aadhar, email, loginAction, logout }} >
             {children}
         </AuthContext.Provider>
     )
