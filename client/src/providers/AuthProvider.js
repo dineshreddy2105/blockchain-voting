@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { createContext, useContext, useState,useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from "react-toastify"; // Importing Toastify
 import { jwtDecode } from "jwt-decode";
@@ -13,8 +13,8 @@ const AuthProvider = ({ children }) => {
         return storedToken ? JSON.parse(storedToken) : null
     })
     const [email, setEmail] = useState(() => {
-        const storedToken = localStorage.getItem('token')
-        return storedToken ? JSON.parse(storedToken) : null
+        const storedEmail = localStorage.getItem('email')
+        return storedEmail ? JSON.parse(storedEmail) : null
     })
     const [aadhar, setAadhar] = useState(() => {
         const storedAadhar = localStorage.getItem('aadhar')
@@ -25,23 +25,6 @@ const AuthProvider = ({ children }) => {
         return storedRole ? JSON.parse(storedRole) : null
     })
     const navigate = useNavigate()
-
-    useEffect(() => {
-        if (token) {
-            const decoded = jwtDecode(token);
-            console.log("Decoded Token Data:", decoded);
-            setAadhar(decoded.aadhar_no);
-            setRole(decoded.role);
-    
-            localStorage.setItem("token", JSON.stringify(token));
-            localStorage.setItem("aadhar", JSON.stringify(decoded.aadhar_no));
-            localStorage.setItem("role", JSON.stringify(decoded.role));
-
-            setTimeout(() => {
-                navigate("/user_panel");
-            }, 2000);
-        }
-    }, [token]);
 
     const loginAction = async (data, role) => {
         if (role === "user") {
@@ -57,6 +40,20 @@ const AuthProvider = ({ children }) => {
                     toast.success("Login successful! Redirecting...", { autoClose: 2000 });
                     console.log(response.data)
                     setToken(response.data.token)
+                    if (response.data.token) {
+                        const decoded = jwtDecode(response.data.token);
+                        console.log("Decoded Token Data:", decoded);
+                        setAadhar(decoded.aadhar_no);
+                        setRole(decoded.role);
+
+                        localStorage.setItem("token", JSON.stringify(response.data.token));
+                        localStorage.setItem("aadhar", JSON.stringify(decoded.aadhar_no));
+                        localStorage.setItem("role", JSON.stringify(decoded.role));
+
+                        setTimeout(() => {
+                            navigate("/user_panel");
+                        }, 2000);
+                    }
                     return
                 } else {
                     toast.error(response.data.message || "Invalid email or password", {
@@ -74,10 +71,10 @@ const AuthProvider = ({ children }) => {
                 }
             }
         }
-        else{
+        else {
             try {
-                console.log("Login action")
-                
+                console.log("Admin Login action")
+
                 const response = await axios.post(
                     "http://localhost:5000/api/admin/login",
                     data
@@ -88,8 +85,8 @@ const AuthProvider = ({ children }) => {
                     console.log(response.data)
                     setToken(response.data.token)
                     var decoded = {}
-                    if (token) {
-                        decoded = jwtDecode(token);
+                    if (response.data.token) {
+                        decoded = jwtDecode(response.data.token);
                         console.log("Decoded Token Data:", decoded);
                         setEmail(decoded.email)
                         setRole(decoded.role)
@@ -128,7 +125,7 @@ const AuthProvider = ({ children }) => {
         setAadhar(null)
         setRole(null)
         setEmail(null)
-        
+
         localStorage.removeItem('token')
         localStorage.removeItem('role')
         localStorage.removeItem('aadhar')
@@ -137,7 +134,7 @@ const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ token, role, aadhar, loginAction, logout }} >
+        <AuthContext.Provider value={{ token, role, aadhar, email, loginAction, logout }} >
             {children}
         </AuthContext.Provider>
     )
