@@ -1,104 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Web3 from 'web3';
+import CandidateCard from './CandidateCard';
 import '../../styles/AddCandidates.css';
+import { Modal, Button } from 'react-bootstrap';
+import VotingContract from '../../contracts/Voting.json';
 
 const AddCandidates = () => {
+  const [web3, setWeb3] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [account, setAccount] = useState('');
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [qualification, setQualification] = useState('');
-  const [role, setRole] = useState('');
   const [description, setDescription] = useState('');
-  const [profileImage, setProfileImage] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [candidates, setCandidates] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const initWeb3 = async () => {
+      if (window.ethereum) {
+        const web3Instance = new Web3(window.ethereum);
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const accounts = await web3Instance.eth.getAccounts();
+          const networkId = await web3Instance.eth.net.getId();
+          const deployedNetwork = VotingContract.networks[networkId];
+
+          if (deployedNetwork) {
+            const contractInstance = new web3Instance.eth.Contract(
+              VotingContract.abi,
+              deployedNetwork.address
+            );
+
+            setWeb3(web3Instance);
+            setContract(contractInstance);
+            setAccount(accounts[0]);
+
+            // Fetch existing candidates
+            const candidateCount = await contractInstance.methods.candidateCount().call();
+            const fetchedCandidates = [];
+            for (let i = 0; i < candidateCount; i++) {
+              const candidate = await contractInstance.methods.candidateDetails(i).call();
+              fetchedCandidates.push({
+                name: candidate.candidateName,
+                description: candidate.description,
+                votes: candidate.voteCount,
+              });
+            }
+            setCandidates(fetchedCandidates);
+          } else {
+            console.error('Contract not deployed on the current network');
+          }
+        } catch (error) {
+          console.error('Error connecting to Web3:', error);
+        }
+      } else {
+        console.error('Ethereum wallet not detected');
+      }
+    };
+
+    initWeb3();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Candidate Details:', { name, age, qualification, role, description, profileImage });
-    // Display success message
-    setSuccessMessage('Candidate details uploaded successfully!');
-    // Reset the form
-    setName('');
-    setAge('');
-    setQualification('');
-    setRole('');
-    setDescription('');
-    setProfileImage(null);
-  };
+    if (!contract) {
+      console.error('Smart contract not loaded');
+      return;
+    }
 
-  const handleImageChange = (e) => {
-    setProfileImage(e.target.files[0]);
+    try {
+      await contract.methods.addCandidate(name, description).send({ from: account });
+      setSuccessMessage('Candidate added successfully!');
+      setCandidates([...candidates, { name, description, votes: 0 }]);
+      setShowForm(false);
+      setName('');
+      setDescription('');
+    } catch (error) {
+      console.error('Error adding candidate:', error);
+    }
   };
 
   return (
     <div className="container">
-      <h2>Add Candidate</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Candidate Name:</label>
-          <input
-            type="text"
-            id="name"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="age">Age:</label>
-          <input
-            type="number"
-            id="age"
-            className="form-control"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="qualification">Qualification:</label>
-          <input
-            type="text"
-            id="qualification"
-            className="form-control"
-            value={qualification}
-            onChange={(e) => setQualification(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="role">Role:</label>
-          <input
-            type="text"
-            id="role"
-            className="form-control"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="description">Description:</label>
-          <textarea
-            id="description"
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="profileImage">Profile Image:</label>
-          <input
-            type="file"
-            id="profileImage"
-            className="form-control"
-            onChange={handleImageChange}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary mt-3">Add Candidate</button>
-      </form>
+      <h2>Candidate Details</h2>
+      <div className="row">
+        {candidates.map((candidate, index) => (
+          <div key={index} className="col-md-4 mb-4">
+            <CandidateCard candidate={candidate} />
+          </div>
+        ))}
+      </div>
+      <Button className="btn btn-primary mb-3" onClick={() => setShowForm(true)}>Add Candidate</Button>
+      <Modal show={showForm} onHide={() => setShowForm(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Candidate</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="name">Candidate Name:</label>
+              <input
+                type="text"
+                id="name"
+                className="form-control"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="description">Description:</label>
+              <textarea
+                id="description"
+                className="form-control"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="btn btn-primary mt-3">Add Candidate</Button>
+          </form>
+        </Modal.Body>
+      </Modal>
       {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
     </div>
   );

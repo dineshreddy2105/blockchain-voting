@@ -2,64 +2,154 @@
 pragma solidity ^0.8.0;
 
 contract Voting {
-    address public chairperson;
-    mapping(address => bool) public hasVoted;
-    mapping(address => uint256) public votes;
-    string[] public candidates;
-    address[] public voters; // Stores the addresses of voters
+    address public admin;
     uint256 public candidateCount;
+    uint256 public voterCount;
+    bool public start;
+    bool public end;
 
-    event VoteCast(address voter, uint256 candidateIndex);
-    event CandidateAdded(string name);
+    enum Phase { Registration, Voting, Results, Ended }
+    Phase public currentPhase;
 
-    modifier onlyChairperson() {
-        require(msg.sender == chairperson, "Only the chairperson can perform this action.");
+    struct Candidate {
+        uint256 candidateId;
+        string candidateName;
+        string description;
+        uint256 voteCount;
+    }
+    mapping(uint256 => Candidate) public candidateDetails;
+
+    struct ElectionDetails {
+        string electionName;
+        string description;
+    }
+    ElectionDetails public electionDetails;
+
+    struct Voter {
+        address voterAddress;
+        string name;
+        bytes32 aadhaarHash;
+        bool isVerified;
+        bool hasVoted;
+        bool isRegistered;
+    }
+    mapping(address => Voter) public voterDetails;
+    address[] public voters;
+
+    event ElectionCreated(string name, string description);
+    event PhaseChanged(Phase newPhase);
+    event CandidateAdded(uint256 candidateId, string name);
+    event VoterRegistered(address voter, string name);
+    event VoterVerified(address voter, bool verified);
+    event VoteCast(address voter, uint256 candidateId);
+    event ElectionEnded();
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can perform this action");
         _;
     }
 
-    // constructor() {
-    //     candidates.push("Hello");
-    // }
-
-    constructor(string[] memory _candidates) {
-        chairperson = msg.sender;
-        candidateCount = _candidates.length;
-        for (uint i = 0; i < _candidates.length; i++) {
-            candidates.push(_candidates[i]);
-        }
+    modifier onlyVerifiedVoter() {
+        require(voterDetails[msg.sender].isVerified, "Only verified voters can vote.");
+        _;
     }
 
-    function addCandidate(string memory _name) public onlyChairperson {
-        candidates.push(_name);
+    constructor() {
+        admin = msg.sender;
+        currentPhase = Phase.Registration;
+    }
+
+    function createElection(string memory _name, string memory _description) public onlyAdmin {
+        electionDetails = ElectionDetails(_name, _description);
+        start = true;
+        end = false;
+        currentPhase = Phase.Registration;
+        emit ElectionCreated(_name, _description);
+    }
+
+    function addCandidate(string memory _candidateName, string memory _description) public onlyAdmin {
+        require(currentPhase == Phase.Registration, "Can only add candidates during Registration phase.");
+        candidateDetails[candidateCount] = Candidate(candidateCount, _candidateName, _description, 0);
+        emit CandidateAdded(candidateCount, _candidateName);
         candidateCount++;
-        emit CandidateAdded(_name);
     }
 
-    function vote(uint256 _candidateIndex) public {
-        require(!hasVoted[msg.sender], "You have already voted.");
-        require(_candidateIndex < candidateCount, "Invalid candidate index.");
-        
-        votes[msg.sender] = _candidateIndex;
-        hasVoted[msg.sender] = true;
-        voters.push(msg.sender); // Store voter address
-        
-        emit VoteCast(msg.sender, _candidateIndex);
+    function registerVoter(string memory _name, string memory _aadhaar) public {
+        require(!voterDetails[msg.sender].isRegistered, "Voter already registered");
+        bytes32 aadhaarHash = keccak256(abi.encodePacked(_aadhaar));
+        voterDetails[msg.sender] = Voter(msg.sender, _name, aadhaarHash, false, false, true);
+        voters.push(msg.sender);
+        voterCount++;
+        emit VoterRegistered(msg.sender, _name);
     }
 
-    function getCandidateVotes(uint256 _candidateIndex) public view returns (uint256) {
-        require(_candidateIndex < candidateCount, "Invalid candidate index.");
-        
-        uint256 voteCount = 0;
-        for (uint i = 0; i < voters.length; i++) {
-            if (votes[voters[i]] == _candidateIndex) {
-                voteCount++;
-            }
+    function verifyVoter(address voterAddress, bool _verifiedStatus) public onlyAdmin {
+        require(voterDetails[voterAddress].isRegistered, "Voter not registered");
+        voterDetails[voterAddress].isVerified = _verifiedStatus;
+        emit VoterVerified(voterAddress, _verifiedStatus);
+    }
+
+    function vote(uint256 candidateId) public onlyVerifiedVoter {
+        require(currentPhase == Phase.Voting, "Voting phase has not started.");
+        require(!voterDetails[msg.sender].hasVoted, "Already voted");
+        require(candidateId < candidateCount, "Invalid candidate ID");
+
+        candidateDetails[candidateId].voteCount++;
+        voterDetails[msg.sender].hasVoted = true;
+        emit VoteCast(msg.sender, candidateId);
+    }
+
+    function changePhase() public onlyAdmin {
+        require(currentPhase != Phase.Ended, "Election already ended.");
+
+        if (currentPhase == Phase.Registration) {
+            require(candidateCount > 0, "Add candidates before starting voting.");
+            currentPhase = Phase.Voting;
+        } else if (currentPhase == Phase.Voting) {
+            currentPhase = Phase.Results;
+        } else if (currentPhase == Phase.Results) {
+            currentPhase = Phase.Ended;
+            start = false;
+            end = true;
+            emit ElectionEnded();
         }
-        return voteCount;
+
+        emit PhaseChanged(currentPhase);
     }
 
-    function getCandidateName(uint256 _index) public view returns (string memory) {
-        require(_index < candidateCount, "Invalid candidate index");
-        return candidates[_index];
+    function getCurrentPhase() public view returns (string memory) {
+        if (currentPhase == Phase.Registration) return "Registration";
+        if (currentPhase == Phase.Voting) return "Voting";
+        if (currentPhase == Phase.Results) return "Results";
+        return "Election Ended";
+    }
+
+    function getCandidates() public view returns (Candidate[] memory) {
+        Candidate[] memory candidates = new Candidate[](candidateCount);
+        for (uint256 i = 0; i < candidateCount; i++) {
+            candidates[i] = candidateDetails[i];
+        }
+        return candidates;
+    }
+
+    function getVoters() public view returns (Voter[] memory) {
+        Voter[] memory voterList = new Voter[](voterCount);
+        for (uint256 i = 0; i < voterCount; i++) {
+            voterList[i] = voterDetails[voters[i]];
+        }
+        return voterList;
+    }
+
+    function getTotalVoter() public view returns (uint256) {
+        return voterCount;
+    }
+
+    function getResults() public view returns (Candidate[] memory) {
+        require(currentPhase == Phase.Results || currentPhase == Phase.Ended, "Results are not available yet.");
+        Candidate[] memory results = new Candidate[](candidateCount);
+        for (uint256 i = 0; i < candidateCount; i++) {
+            results[i] = candidateDetails[i];
+        }
+        return results;
     }
 }

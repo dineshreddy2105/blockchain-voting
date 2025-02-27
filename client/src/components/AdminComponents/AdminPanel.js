@@ -6,7 +6,7 @@ import Instructions from "./Instructions";
 import ElectionDetails from "./ElectionDetails";
 import AddCandidates from "./AddCandidates";
 import ManageElection from "./ManageElection";
-import RegisterVoters from "./RegisterVoters";
+import VerifyVoters from "./VerifyVoters";
 import CandidateDetails from "./CandidateDetails";
 import LiveMonitoring from "./LiveMonitoring";
 import "../../styles/Sidebar.css";
@@ -24,10 +24,10 @@ const AdminPanel = ({ setContractAddress }) => {
   const tabs = [
     "Instructions",
     "Election Details",
-    "Candidate Details",
-    "Add Candidates",
-    "Register Voters",
+    // "Candidate Details",
     "Manage Election",
+    "Add Candidates",
+    "Verify Voters",
     "Live Monitoring",
   ];
 
@@ -72,10 +72,10 @@ const AdminPanel = ({ setContractAddress }) => {
             <div className="content p-3">
               {activeTab === "Instructions" && <Instructions />}
               {activeTab === "Election Details" && <ElectionDetails />}
-              {activeTab === "Candidate Details" && <CandidateDetails />}
-              {activeTab === "Add Candidates" && <AddCandidates />}
-              {activeTab === "Register Voters" && <RegisterVoters />}
+              {/* {activeTab === "Candidate Details" && <CandidateDetails />} */}
               {activeTab === "Manage Election" && <ManageElection />}
+              {activeTab === "Add Candidates" && <AddCandidates />}
+              {activeTab === "Verify Voters" && <VerifyVoters />}
               {activeTab === "Live Monitoring" && <LiveMonitoring />}
             </div>
           </div>
