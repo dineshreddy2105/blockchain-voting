@@ -80,7 +80,7 @@ const VoterRegistration = () => {
 
     try {
       await ElectionInstance.methods
-        .registerAsVoter(name, aadhaarNumber)
+        .registerVoter(name, aadhaarNumber)
         .send({ from: account, gas: 1000000 });
 
       setSuccessMessage('Voter registered successfully!');
