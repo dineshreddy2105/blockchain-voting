@@ -9,7 +9,7 @@ const ManageElection = () => {
   const [electionName, setElectionName] = useState('');
   const [electionDescription, setElectionDescription] = useState('');
   const [currentPhase, setCurrentPhase] = useState('');
-  const [electionCreated, setElectionCreated] = useState(false);
+  const [electionCreated, setElectionCreated] = useState(true); // Set to true to show phase controls by default
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
