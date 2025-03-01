@@ -9,109 +9,163 @@ const ManageElection = () => {
   const [electionName, setElectionName] = useState('');
   const [electionDescription, setElectionDescription] = useState('');
   const [currentPhase, setCurrentPhase] = useState('');
-  const [electionCreated, setElectionCreated] = useState(true); // Set to true to show phase controls by default
+  const [electionCreated, setElectionCreated] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const loadBlockchainData = async () => {
-      if (window.ethereum) {
-        const web3Instance = new Web3(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accounts = await web3Instance.eth.getAccounts();
-        const networkId = await web3Instance.eth.net.getId();
-        const deployedNetwork = VotingContract.networks[networkId];
-        if (deployedNetwork) {
-          const contractInstance = new web3Instance.eth.Contract(
-            VotingContract.abi,
-            deployedNetwork.address
-          );
-          setWeb3(web3Instance);
-          setContract(contractInstance);
-          setAccount(accounts[0]);
-          const phase = await contractInstance.methods.getCurrentPhase().call();
-          setCurrentPhase(phase);
-        }
-      } else {
-        alert('Please install MetaMask to interact with this DApp');
-      }
-    };
     loadBlockchainData();
   }, []);
 
-  const handleCreateElection = async (e) => {
-    e.preventDefault();
-    if (contract) {
+  const loadBlockchainData = async () => {
+    if (window.ethereum) {
       try {
-        await contract.methods.createElection(electionName, electionDescription).send({ from: account });
-        setSuccessMessage('Election created successfully!');
-        setElectionCreated(true);
-        const phase = await contract.methods.getCurrentPhase().call();
+        const web3Instance = new Web3(window.ethereum);
+        const accounts = await web3Instance.eth.getAccounts();
+        
+        if (accounts.length === 0) {
+          setErrorMessage('MetaMask is installed but not connected. Please connect your wallet.');
+          return;
+        }
+
+        const networkId = await web3Instance.eth.net.getId();
+        const deployedNetwork = VotingContract.networks[networkId];
+
+        if (!deployedNetwork) {
+          setErrorMessage('Smart contract not deployed on the selected network. Please switch networks.');
+          return;
+        }
+
+        const contractInstance = new web3Instance.eth.Contract(
+          VotingContract.abi,
+          deployedNetwork.address
+        );
+
+        setWeb3(web3Instance);
+        setContract(contractInstance);
+        setAccount(accounts[0]);
+
+        const phase = await contractInstance.methods.getCurrentPhase().call();
         setCurrentPhase(phase);
       } catch (error) {
+        setErrorMessage('Error loading blockchain data. Please try again.');
         console.error(error);
-        setSuccessMessage('Failed to create election.');
       }
+    } else {
+      setErrorMessage('MetaMask is not installed. Please install MetaMask to use this DApp.');
+    }
+  };
+
+  const handleConnectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setErrorMessage('');
+        loadBlockchainData();
+      } catch (error) {
+        setErrorMessage('Connection to MetaMask was denied.');
+      }
+    } else {
+      setErrorMessage('MetaMask is not installed. Please install it to proceed.');
+    }
+  };
+
+  const handleCreateElection = async (e) => {
+    e.preventDefault();
+    if (!contract || !account) {
+      setErrorMessage('Please connect MetaMask before creating an election.');
+      return;
+    }
+    try {
+      await contract.methods.createElection(electionName, electionDescription).send({ from: account });
+      setSuccessMessage('Election created successfully!');
+      setElectionCreated(true);
+      const phase = await contract.methods.getCurrentPhase().call();
+      setCurrentPhase(phase);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Failed to create election.');
     }
   };
 
   const handleChangePhase = async () => {
-    if (contract) {
-      try {
-        await contract.methods.changePhase().send({ from: account });
-        const newPhase = await contract.methods.getCurrentPhase().call();
-        setCurrentPhase(newPhase);
-        setSuccessMessage(`Election phase changed to ${newPhase}`);
-      } catch (error) {
-        console.error(error);
-        setSuccessMessage('Failed to change phase.');
-      }
+    if (!contract || !account) {
+      setErrorMessage('Please connect MetaMask before changing the election phase.');
+      return;
+    }
+    try {
+      await contract.methods.changePhase().send({ from: account });
+      const newPhase = await contract.methods.getCurrentPhase().call();
+      setCurrentPhase(newPhase);
+      setSuccessMessage(`Election phase changed to ${newPhase}`);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Failed to change phase.');
     }
   };
 
   return (
     <div className="container">
       <h2>Manage Election</h2>
-      <form onSubmit={handleCreateElection}>
-        <div className="form-group">
-          <label htmlFor="electionName">Election Name:</label>
-          <input
-            type="text"
-            id="electionName"
-            className="form-control"
-            value={electionName}
-            onChange={(e) => setElectionName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="electionDescription">Election Description:</label>
-          <textarea
-            id="electionDescription"
-            className="form-control"
-            value={electionDescription}
-            onChange={(e) => setElectionDescription(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary mt-3">Create Election</button>
-      </form>
-      {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
-      {electionCreated && (
-        <div className="mt-5">
-          <h3>Current Phase: {currentPhase}</h3>
-          {currentPhase !== 'Election Ended' && (
-            <button className="btn btn-secondary mt-3" onClick={handleChangePhase}>
-              {currentPhase === 'Registration' && 'Start Voting Phase'}
-              {currentPhase === 'Voting' && 'Start Results Phase'}
-              {currentPhase === 'Results' && 'End Election'}
-            </button>
-          )}
+
+      {!account && (
+        <div className="alert alert-warning">
+          <p>{errorMessage || 'Please connect to MetaMask to proceed.'}</p>
+          <button className="btn btn-warning" onClick={handleConnectWallet}>
+            Connect MetaMask
+          </button>
         </div>
       )}
-      {currentPhase === 'Registration' && electionCreated && (
-        <div className="alert alert-warning mt-3">
-          Reminder: Please add candidates before starting the voting phase.
-        </div>
+
+      {account && (
+        <>
+          <form onSubmit={handleCreateElection}>
+            <div className="form-group">
+              <label htmlFor="electionName">Election Name:</label>
+              <input
+                type="text"
+                id="electionName"
+                className="form-control"
+                value={electionName}
+                onChange={(e) => setElectionName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="electionDescription">Election Description:</label>
+              <textarea
+                id="electionDescription"
+                className="form-control"
+                value={electionDescription}
+                onChange={(e) => setElectionDescription(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary mt-3">Create Election</button>
+          </form>
+
+          {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
+          {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
+
+          {electionCreated && (
+            <div className="mt-5">
+              <h3>Current Phase: {currentPhase}</h3>
+              {currentPhase !== 'Election Ended' && (
+                <button className="btn btn-secondary mt-3" onClick={handleChangePhase}>
+                  {currentPhase === 'Registration' && 'Start Voting Phase'}
+                  {currentPhase === 'Voting' && 'Start Results Phase'}
+                  {currentPhase === 'Results' && 'End Election'}
+                </button>
+              )}
+            </div>
+          )}
+
+          {currentPhase === 'Registration' && electionCreated && (
+            <div className="alert alert-warning mt-3">
+              Reminder: Please add candidates before starting the voting phase.
+            </div>
+          )}
+        </>
       )}
     </div>
   );
