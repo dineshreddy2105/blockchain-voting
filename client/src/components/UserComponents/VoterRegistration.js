@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import VotingContract from '../../contracts/Voting.json';
+import { toast, ToastContainer } from "react-toastify";
 import '../../styles/VoterRegistration.css';
+import axios from 'axios';
 
 const VoterRegistration = () => {
   const [aadhaarNumber, setAadhaarNumber] = useState('');
   const [name, setName] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState('');
+  // const [generatedOtp, setGeneratedOtp] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [web3, setWeb3] = useState(null);
@@ -50,9 +52,13 @@ const VoterRegistration = () => {
     init();
   }, []);
 
-  const generateOtp = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+  const showToast = (message, type = "info") => {
+    toast[type](message, { autoClose: 3000 });
   };
+
+  // const generateOtp = () => {
+  //   return Math.floor(100000 + Math.random() * 900000).toString();
+  // };
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -62,21 +68,35 @@ const VoterRegistration = () => {
       return;
     }
 
-    const newOtp = generateOtp();
-    setGeneratedOtp(newOtp);
-    console.log(`OTP sent to voter's email: ${newOtp}`); // Simulate email sending
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/users/send_otp", { aadhar_no: aadhaarNumber });
+      // setOtp(data.otp);
+      showToast("OTP sent successfully!", "success");
+    } catch (error) {
+      showToast(error.response?.data?.message || "Failed to send OTP", "error");
+    }
+
+    // const newOtp = generateOtp();
+    // setGeneratedOtp(newOtp);
+    // console.log(`OTP sent to voter's email: ${newOtp}`); // Simulate email sending
     setOtpSent(true);
     setErrorMessage('');
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    try {
+      const { data } = await axios.post("http://localhost:5000/api/users/send_otp", { aadhar_no: aadhaarNumber, otp });
+      showToast(data.message, "success")
 
-    if (otp !== generatedOtp) {
+    }
+    catch (error) {
       setErrorMessage('Invalid OTP. Please try again.');
       setOtp('');
+      showToast(error.response?.data?.message || "Failed to verify OTP", "error");
       return;
     }
+
 
     try {
       await ElectionInstance.methods
@@ -165,6 +185,7 @@ const VoterRegistration = () => {
       )}
       {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
       {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
+      <ToastContainer position="top-right" />
     </div>
   );
 };

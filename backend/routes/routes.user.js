@@ -5,6 +5,7 @@ const {
   registerUser,
   loginUser,
   userVerification,
+  verifyOTP,
 } = require("../controllers/controllers.user");
 
 
@@ -13,12 +14,14 @@ const {
 // router.post("/", SaveUser);
 
 //user verification
-router.post("/send_otp",userVerification)
+router.post("/send_otp", userVerification)
 
 // Register a new user
 router.post("/sign_up", registerUser);
 
 // User login route
 router.post("/login", loginUser);
+
+router.post("/verifyOTP", verifyOTP);
 
 module.exports = router;
