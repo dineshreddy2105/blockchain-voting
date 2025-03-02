@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Carousel } from "react-bootstrap";
 import FirstImage from "../Images/first.svg"; // Image for nomination phase
 import SecondImage from "../Images/second.svg"; // Image for voting phase
@@ -7,6 +9,7 @@ import Logo from "../Images/BlockVote.jpg";
 import "../styles/Home.css";
 
 const Home = () => {
+
   return (
     <div className="home-container">
       {/* Header Section */}
