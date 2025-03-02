@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const Admin = require("../models/models.admin");
-const {createSecretToken} = require("../services/JWTService")
+const { createSecretToken } = require("../services/JWTService")
 
 const loginAdmin = async (req, res) => {
   console.log(Admin);
@@ -31,7 +31,7 @@ const loginAdmin = async (req, res) => {
     data = {
       email: admin.email,
       name: admin.name,
-      role: "user"
+      role: "admin"
     }
 
     const token = createSecretToken(data);
