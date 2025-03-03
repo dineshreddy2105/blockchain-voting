@@ -103,7 +103,7 @@ contract Voting {
         require(currentPhase != Phase.Ended, "Election already ended.");
 
         if (currentPhase == Phase.Registration) {
-            require(candidateCount > 0, "Add candidates before starting voting.");
+            require(candidateCount > 1, "Add minimum of 2 candidates before starting voting phase.");
             currentPhase = Phase.Voting;
         } else if (currentPhase == Phase.Voting) {
             currentPhase = Phase.Results;
