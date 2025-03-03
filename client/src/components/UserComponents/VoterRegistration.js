@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Web3 from "web3";
 import VotingContract from "../../contracts/Voting.json";
 import { toast, ToastContainer } from "react-toastify";
 import "../../styles/VoterRegistration.css";
 import axios from "axios";
+import { BlockchainContext } from "../../providers/BlockChainProvider";
 
 const VoterRegistration = () => {
   const [aadhaarNumber, setAadhaarNumber] = useState("");
@@ -12,48 +13,49 @@ const VoterRegistration = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [web3, setWeb3] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [ElectionInstance, setElectionInstance] = useState(null);
+  const { web3, account, contractInstance } = useContext(BlockchainContext);
+  // const [web3, setWeb3] = useState(null);
+  // const [account, setAccount] = useState(null);
+  // const [contractInstance, setcontractInstance] = useState(null);
   const [voterStatus, setVoterStatus] = useState(null);
 
-  useEffect(() => {
-    const init = async () => {
-      if (window.ethereum) {
-        const web3Instance = new Web3(window.ethereum);
-        try {
-          await window.ethereum.request({ method: "eth_requestAccounts" });
-          const accounts = await web3Instance.eth.getAccounts();
-          const networkId = await web3Instance.eth.net.getId();
-          const deployedNetwork = VotingContract.networks[networkId];
+  // useEffect(() => {
+  //   const init = async () => {
+  //     if (window.ethereum) {
+  //       const web3Instance = new Web3(window.ethereum);
+  //       try {
+  //         await window.ethereum.request({ method: "eth_requestAccounts" });
+  //         const accounts = await web3Instance.eth.getAccounts();
+  //         const networkId = await web3Instance.eth.net.getId();
+  //         const deployedNetwork = VotingContract.networks[networkId];
 
-          if (!deployedNetwork) {
-            setErrorMessage("Smart contract not deployed on this network.");
-            return;
-          }
+  //         if (!deployedNetwork) {
+  //           setErrorMessage("Smart contract not deployed on this network.");
+  //           return;
+  //         }
 
-          const instance = new web3Instance.eth.Contract(
-            VotingContract.abi,
-            deployedNetwork.address
-          );
+  //         const instance = new web3Instance.eth.Contract(
+  //           VotingContract.abi,
+  //           deployedNetwork.address
+  //         );
 
-          setWeb3(web3Instance);
-          setAccount(accounts[0]);
-          setElectionInstance(instance);
+  //         setWeb3(web3Instance);
+  //         setAccount(accounts[0]);
+  //         setcontractInstance(instance);
 
-          // Fetch voter status if registered
-          fetchVoterStatus(instance, accounts[0]);
-        } catch (error) {
-          console.error("Web3 Initialization Error:", error);
-          setErrorMessage("Failed to connect to blockchain.");
-        }
-      } else {
-        setErrorMessage("Please install MetaMask.");
-      }
-    };
+  //         // Fetch voter status if registered
+  //         fetchVoterStatus(instance, accounts[0]);
+  //       } catch (error) {
+  //         console.error("Web3 Initialization Error:", error);
+  //         setErrorMessage("Failed to connect to blockchain.");
+  //       }
+  //     } else {
+  //       setErrorMessage("Please install MetaMask.");
+  //     }
+  //   };
 
-    init();
-  }, []);
+  //   init();
+  // }, []);
 
   const fetchVoterStatus = async (instance, userAccount) => {
     try {
@@ -91,18 +93,20 @@ const VoterRegistration = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/users/send_otp", { aadhar_no: aadhaarNumber, otp });
+      await contractInstance.methods.registerVoter(name, aadhaarNumber).send({ from: account, gas: 1000000 });
+
+      await axios.post("http://localhost:5000/api/users/verifyOTP", { aadhar_no: aadhaarNumber, otp });
       showToast("OTP Verified!", "success");
 
-      await ElectionInstance.methods.registerVoter(name, aadhaarNumber).send({ from: account, gas: 1000000 });
 
       setSuccessMessage("Voter registered successfully!");
       setOtpSent(false);
+      setErrorMessage("")
       setAadhaarNumber("");
       setName("");
       setOtp("");
 
-      fetchVoterStatus(ElectionInstance, account);
+      fetchVoterStatus(contractInstance, account);
     } catch (error) {
       setErrorMessage("Registration failed. Please try again.");
       showToast(error.response?.data?.message || "Failed to verify OTP", "error");

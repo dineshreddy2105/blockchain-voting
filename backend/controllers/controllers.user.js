@@ -81,6 +81,7 @@ const registerUser = async (req, res) => {
 async function verifyOTP(req, res) {
   const { aadhar_no, otp } = req.body
   const otps = await otpModel.findOne({ aadhar_no });
+  console.log(otps.otp, "---HEllo---", otp)
   if (!otps || otps.otp !== otp || otps.otp_expiry < Date.now()) {
     return res.status(400).json({ message: "Invalid or expired OTP" });
   }

@@ -26,6 +26,8 @@ const AuthProvider = ({ children }) => {
     })
     const navigate = useNavigate()
 
+
+
     const loginAction = async (data, role) => {
         if (role === "user") {
             try {

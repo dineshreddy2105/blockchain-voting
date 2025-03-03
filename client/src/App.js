@@ -12,6 +12,7 @@ import UserSignUpPage from "./components/UserComponents/UserSignUpPage";
 import VoterProtectedRoute from "./middlewares/VoterProtectedRoutes"
 import AdminProtectedRoute from "./middlewares/AdminProtectedRoutes";
 import { ToastContainer } from "react-toastify";
+import BlockchainProvider from "./providers/BlockChainProvider";
 function App() {
   //const [contractAddress, setContractAddress] = useState("");
 
@@ -20,22 +21,24 @@ function App() {
       <ToastContainer position="top-right" />
       <Router>
         <AuthProvider>
-          <div className="container-fluid">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/sign-in" element={<UserLoginPage />} />
-              <Route path="/admin-signin" element={<AdminLoginPage />} />
-              <Route path="/sign-up" element={<UserSignUpPage />} />
+          <BlockchainProvider>
+            <div className="container-fluid">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/sign-in" element={<UserLoginPage />} />
+                <Route path="/admin-signin" element={<AdminLoginPage />} />
+                <Route path="/sign-up" element={<UserSignUpPage />} />
 
-              <Route element={<VoterProtectedRoute />}>
-                <Route path="/user_panel" element={<UserPanel />} />
-              </Route>
+                <Route element={<VoterProtectedRoute />}>
+                  <Route path="/user_panel" element={<UserPanel />} />
+                </Route>
 
-              <Route element={<AdminProtectedRoute />}>
-                <Route path="/admin_panel" element={<AdminPanel />} />
-              </Route>
-            </Routes>
-          </div>
+                <Route element={<AdminProtectedRoute />}>
+                  <Route path="/admin_panel" element={<AdminPanel />} />
+                </Route>
+              </Routes>
+            </div>
+          </BlockchainProvider>
         </AuthProvider>
       </Router>
     </>

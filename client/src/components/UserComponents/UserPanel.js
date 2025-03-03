@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import deployContract from "../../deployContract";
-import { useNavigate } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from "react";
+// import deployContract from "../../deployContract";
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from "../../providers/AuthProvider";
 import UserInstructions from "./UserInstructions";
 import VoterRegistration from "./VoterRegistration";
@@ -9,9 +9,10 @@ import Results from "./Results";
 import UserLobby from "./UserLobby";
 import "../../styles/Sidebar.css";
 import { toast, ToastContainer } from "react-toastify";
+import { BlockchainContext } from "../../providers/BlockChainProvider";
 
-
-const UserPanel = ({ setContractAddress }) => {
+const UserPanel = () => {
+  // const UserPanel = ({ setContractAddress }) => {
   // const [candidates, setCandidates] = useState([]);
   // const [candidateName, setCandidateName] = useState("");
   // const [isDeploying, setIsDeploying] = useState(false);
@@ -60,8 +61,18 @@ const UserPanel = ({ setContractAddress }) => {
   //   </div>
   // );
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState("Instructions");
+  const location = useLocation();
+
+
+  const [activeTab, setActiveTab] = useState("Lobby");
   const { logout } = useAuth();
+  const { initWeb3 } = useContext(BlockchainContext);
+
+  useEffect(() => {
+    initWeb3();
+
+  }, [])
+
   function handleLogout() {
     toast.success("Logout successful! Redirecting...", { autoClose: 2000 });
     setTimeout(() => {
@@ -82,6 +93,7 @@ const UserPanel = ({ setContractAddress }) => {
               <hr style={{ color: "white" }} />
               <ul className="list-group list-group-flush">
                 {[
+                  "Lobby",
                   "Instructions",
                   "Voter Registration",
                   "Voting Area",
@@ -104,7 +116,7 @@ const UserPanel = ({ setContractAddress }) => {
           {/* Main Content (80% width) */}
           <div className="col-md-9 col-lg-10">
             <div className="content p-3">
-              {activeTab === "lobby" && <UserLobby />}
+              {activeTab === "Lobby" && <UserLobby />}
               {activeTab === "Instructions" && <UserInstructions />}
               {activeTab === "Voter Registration" && <VoterRegistration />}
               {activeTab === "Voting Area" && <VotingArea />}

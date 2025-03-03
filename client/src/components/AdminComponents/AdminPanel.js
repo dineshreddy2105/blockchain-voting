@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import deployContract from "../../deployContract";
 import { useNavigate } from 'react-router-dom'
 import { ToastContainer } from "react-toastify";
@@ -12,14 +12,20 @@ import LiveMonitoring from "./LiveMonitoring";
 import "../../styles/Sidebar.css";
 import { toast } from "react-toastify";
 import { useAuth } from "../../providers/AuthProvider";
+import { BlockchainContext } from "../../providers/BlockChainProvider";
 
 
 
 const AdminPanel = ({ setContractAddress }) => {
   const navigate = useNavigate()
-
   const [activeTab, setActiveTab] = useState("Instructions");
   const { logout } = useAuth();
+
+  const { initWeb3 } = useContext(BlockchainContext);
+
+  useEffect(() => {
+    initWeb3();
+  }, [])
 
   const tabs = [
     "Instructions",

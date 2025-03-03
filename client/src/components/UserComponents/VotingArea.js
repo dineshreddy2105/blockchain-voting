@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Web3 from "web3";
 import VotingContract from "../../contracts/Voting.json";
 import "../../styles/VotingArea.css";
+import { BlockchainContext } from "../../providers/BlockChainProvider";
 
 const VotingArea = () => {
-  const [web3, setWeb3] = useState(null);
-  const [contract, setContract] = useState(null);
-  const [account, setAccount] = useState(null);
+  // const [web3, setWeb3] = useState(null);
+  // const [contract, setContract] = useState(null);
+  const { web3, account: account1, contractInstance } = useContext(BlockchainContext);
+  const [account, setAccount] = useState(account1);
   const [chairperson, setChairperson] = useState(null);
   const [candidates, setCandidates] = useState([]);
   const [votes, setVotes] = useState([]);
@@ -17,48 +19,48 @@ const VotingArea = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-      if (window.ethereum) {
-        const web3Instance = new Web3(window.ethereum);
-        setWeb3(web3Instance);
-        try {
-          const accounts = await web3Instance.eth.requestAccounts();
-          setAccount(accounts[0]);
+    //   const init = async () => {
+    //     if (window.ethereum) {
+    //       const web3Instance = new Web3(window.ethereum);
+    //       setWeb3(web3Instance);
+    //       try {
+    //         const accounts = await web3Instance.eth.requestAccounts();
+    //         setAccount(accounts[0]);
 
-          const networkId = await web3Instance.eth.net.getId();
-          const deployedNetwork = VotingContract.networks[networkId];
-          if (!deployedNetwork) {
-            setErrorMessage("Contract not deployed on this network.");
-            return;
-          }
+    //         const networkId = await web3Instance.eth.net.getId();
+    //         const deployedNetwork = VotingContract.networks[networkId];
+    //         if (!deployedNetwork) {
+    //           setErrorMessage("Contract not deployed on this network.");
+    //           return;
+    //         }
 
-          const contractInstance = new web3Instance.eth.Contract(
-            VotingContract.abi,
-            deployedNetwork.address
-          );
-          setContract(contractInstance);
+    //         const contractInstance = new web3Instance.eth.Contract(
+    //           VotingContract.abi,
+    //           deployedNetwork.address
+    //         );
+    //         setContract(contractInstance);
 
-          const chairpersonAddress = await contractInstance.methods
-            .chairperson()
-            .call();
-          setChairperson(chairpersonAddress);
+    //         const chairpersonAddress = await contractInstance.methods
+    //           .chairperson()
+    //           .call();
+    //         setChairperson(chairpersonAddress);
 
-          loadCandidatesAndVotes(contractInstance, accounts[0]);
+    //         loadCandidatesAndVotes(contractInstance, accounts[0]);
 
-          // Event listener for MetaMask account change
-          window.ethereum.on("accountsChanged", handleAccountChange);
-        } catch (error) {
-          setErrorMessage("Error connecting to MetaMask.");
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        setErrorMessage("MetaMask not detected. Please install it.");
-        setIsLoading(false);
-      }
-    };
+    //         // Event listener for MetaMask account change
+    //         window.ethereum.on("accountsChanged", handleAccountChange);
+    //       } catch (error) {
+    //         setErrorMessage("Error connecting to MetaMask.");
+    //       } finally {
+    //         setIsLoading(false);
+    //       }
+    //     } else {
+    //       setErrorMessage("MetaMask not detected. Please install it.");
+    //       setIsLoading(false);
+    //     }
+    //   };
 
-    init();
+    //   init();
 
     return () => {
       if (window.ethereum) {
@@ -71,8 +73,8 @@ const VotingArea = () => {
   const handleAccountChange = async (accounts) => {
     if (accounts.length > 0) {
       setAccount(accounts[0]);
-      if (contract) {
-        loadCandidatesAndVotes(contract, accounts[0]);
+      if (contractInstance) {
+        loadCandidatesAndVotes(contractInstance, accounts[0]);
       }
     } else {
       setAccount(null);
@@ -117,13 +119,13 @@ const VotingArea = () => {
       return;
     }
 
-    if (contract && account.toLowerCase() === chairperson?.toLowerCase()) {
+    if (contractInstance && account.toLowerCase() === chairperson?.toLowerCase()) {
       setIsLoading(true);
       try {
-        await contract.methods.addCandidate(newCandidate).send({ from: account });
+        await contractInstance.methods.addCandidate(newCandidate).send({ from: account });
         setNewCandidate("");
         setErrorMessage(null);
-        loadCandidatesAndVotes(contract, account); // Reload candidates and votes
+        loadCandidatesAndVotes(contractInstance, account); // Reload candidates and votes
       } catch (error) {
         setErrorMessage(error.message || "Error adding candidate.");
       } finally {
@@ -135,19 +137,19 @@ const VotingArea = () => {
   };
 
   const castVote = async () => {
-    if (contract && account && selectedCandidate !== null) {
+    if (contractInstance && account && selectedCandidate !== null) {
       setIsLoading(true);
       setErrorMessage(null);
-  
+
       try {
         // Send the vote transaction and wait for confirmation
-        await contract.methods.vote(selectedCandidate).send({ from: account });
-  
+        await contractInstance.methods.vote(selectedCandidate).send({ from: account });
+
         // Set hasVoted to true immediately
         setHasVoted(true);
-  
+
         // Reload updated candidates and vote counts
-        await loadCandidatesAndVotes(contract, account);
+        await loadCandidatesAndVotes(contractInstance, account);
       } catch (error) {
         setErrorMessage(error.message || "Error casting vote.");
       } finally {
