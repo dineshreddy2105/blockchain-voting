@@ -12,6 +12,7 @@ const BlockchainProvider = ({ children }) => {
 
     // Initialize Web3 and Contract
     const initWeb3 = async () => {
+        console.log("Web3 initialization")
         if (window.ethereum) {
             try {
                 const web3Instance = new Web3(window.ethereum);

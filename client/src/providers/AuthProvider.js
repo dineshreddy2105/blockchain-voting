@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
                         localStorage.setItem("role", JSON.stringify(decoded.role));
 
                         setTimeout(() => {
-                            navigate("/user_panel");
+                            navigate("/user_lobby");
                         }, 2000);
                     }
                     return

@@ -6,7 +6,6 @@ import UserInstructions from "./UserInstructions";
 import VoterRegistration from "./VoterRegistration";
 import VotingArea from "./VotingArea";
 import Results from "./Results";
-import UserLobby from "./UserLobby";
 import "../../styles/Sidebar.css";
 import { toast, ToastContainer } from "react-toastify";
 import { BlockchainContext } from "../../providers/BlockChainProvider";
@@ -61,10 +60,7 @@ const UserPanel = () => {
   //   </div>
   // );
   const navigate = useNavigate()
-  const location = useLocation();
-
-
-  const [activeTab, setActiveTab] = useState("Lobby");
+  const [activeTab, setActiveTab] = useState("Instructions");
   const { logout } = useAuth();
   const { initWeb3 } = useContext(BlockchainContext);
 
@@ -93,7 +89,6 @@ const UserPanel = () => {
               <hr style={{ color: "white" }} />
               <ul className="list-group list-group-flush">
                 {[
-                  "Lobby",
                   "Instructions",
                   "Voter Registration",
                   "Voting Area",
@@ -116,7 +111,6 @@ const UserPanel = () => {
           {/* Main Content (80% width) */}
           <div className="col-md-9 col-lg-10">
             <div className="content p-3">
-              {activeTab === "Lobby" && <UserLobby />}
               {activeTab === "Instructions" && <UserInstructions />}
               {activeTab === "Voter Registration" && <VoterRegistration />}
               {activeTab === "Voting Area" && <VotingArea />}

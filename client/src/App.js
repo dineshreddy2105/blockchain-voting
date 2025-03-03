@@ -13,6 +13,7 @@ import VoterProtectedRoute from "./middlewares/VoterProtectedRoutes"
 import AdminProtectedRoute from "./middlewares/AdminProtectedRoutes";
 import { ToastContainer } from "react-toastify";
 import BlockchainProvider from "./providers/BlockChainProvider";
+import UserLobby from "./components/UserComponents/UserLobby";
 function App() {
   //const [contractAddress, setContractAddress] = useState("");
 
@@ -31,6 +32,7 @@ function App() {
 
                 <Route element={<VoterProtectedRoute />}>
                   <Route path="/user_panel" element={<UserPanel />} />
+                  <Route path="/user_lobby" element={<UserLobby />} />
                 </Route>
 
                 <Route element={<AdminProtectedRoute />}>

@@ -2,6 +2,21 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { BlockchainContext } from "../../providers/BlockChainProvider";
 
+const ElectionDetails = ({ name, description, onNavigate }) => {
+    return (
+        <div className="bg-white shadow-lg rounded-lg p-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800">Election: {name}</h2>
+            <p className="text-gray-600 mt-2">{description}</p>
+            <button
+                onClick={onNavigate}
+                className="btn-primary mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300"
+            >
+                Go to Election Instructions
+            </button>
+        </div>
+    );
+};
+
 const UserLobby = () => {
     const { contractInstance } = useContext(BlockchainContext);
     const navigate = useNavigate();
@@ -9,7 +24,11 @@ const UserLobby = () => {
     const [electionName, setElectionName] = useState(null);
     const [electionDescription, setElectionDescription] = useState(null);
     const [isElectionCreated, setIsElectionCreated] = useState(false);
+    const { initWeb3 } = useContext(BlockchainContext);
 
+    useEffect(() => {
+        initWeb3();
+    }, [])
     // Fetch Election Details
     useEffect(() => {
         const fetchElectionDetails = async () => {
@@ -36,17 +55,17 @@ const UserLobby = () => {
     }, [contractInstance]);
 
     return (
-        <div className="user-lobby">
+        <div className="flex justify-center items-center h-screen bg-gray-100">
             {isElectionCreated ? (
-                <>
-                    <h2>Election: {electionName}</h2>
-                    <p>Description: {electionDescription}</p>
-                    <button onClick={() => navigate("/user_panel?tab=Instructions")} className="btn btn-primary">
-                        Go to Election Instructions
-                    </button>
-                </>
+                <ElectionDetails
+                    name={electionName}
+                    description={electionDescription}
+                    onNavigate={() => navigate("/user_panel")}
+                />
             ) : (
-                <h3>No active election found.</h3>
+                <div className=" shadow-lg rounded-lg p-6 text-center">
+                    <h3 className="text-xl font-semibold text-gray-800">No active election found.</h3>
+                </div>
             )}
         </div>
     );
