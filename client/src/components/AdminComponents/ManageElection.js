@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import VotingContract from '../../contracts/Voting.json'; // Ensure the contract JSON file is correctly set
+import VotingContract from '../../contracts/Voting.json';
 
 const ManageElection = () => {
   const [web3, setWeb3] = useState(null);
@@ -9,7 +9,7 @@ const ManageElection = () => {
   const [electionName, setElectionName] = useState('');
   const [electionDescription, setElectionDescription] = useState('');
   const [currentPhase, setCurrentPhase] = useState('');
-  const [electionCreated, setElectionCreated] = useState(true);
+  const [electionCreated, setElectionCreated] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -45,8 +45,17 @@ const ManageElection = () => {
         setContract(contractInstance);
         setAccount(accounts[0]);
 
+        // Fetch current phase
         const phase = await contractInstance.methods.getCurrentPhase().call();
         setCurrentPhase(phase);
+
+        // Fetch election details
+        const election = await contractInstance.methods.electionDetails().call();
+        if (election.electionName) {
+          setElectionName(election.electionName);
+          setElectionDescription(election.description);
+          setElectionCreated(true);
+        }
       } catch (error) {
         setErrorMessage('Error loading blockchain data. Please try again.');
         console.error(error);
@@ -80,6 +89,12 @@ const ManageElection = () => {
       await contract.methods.createElection(electionName, electionDescription).send({ from: account });
       setSuccessMessage('Election created successfully!');
       setElectionCreated(true);
+
+      // Fetch updated election details
+      const election = await contract.methods.electionDetails().call();
+      setElectionName(election.electionName);
+      setElectionDescription(election.description);
+
       const phase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(phase);
     } catch (error) {
@@ -93,7 +108,18 @@ const ManageElection = () => {
       setErrorMessage('Please connect MetaMask before changing the election phase.');
       return;
     }
+  
     try {
+      // Fetch the admin address from the contract
+      const adminAddress = await contract.methods.admin().call();
+  
+      // Check if the connected account is the admin
+      if (account.toLowerCase() !== adminAddress.toLowerCase()) {
+        setErrorMessage('Only the election admin can change the phase.');
+        return;
+      }
+  
+      // Proceed with changing the phase
       await contract.methods.changePhase().send({ from: account });
       const newPhase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(newPhase);
@@ -103,6 +129,9 @@ const ManageElection = () => {
       setErrorMessage('Failed to change phase.');
     }
   };
+  
+  
+  
 
   return (
     <div className="container">
@@ -119,30 +148,38 @@ const ManageElection = () => {
 
       {account && (
         <>
-          <form onSubmit={handleCreateElection}>
-            <div className="form-group">
-              <label htmlFor="electionName">Election Name:</label>
-              <input
-                type="text"
-                id="electionName"
-                className="form-control"
-                value={electionName}
-                onChange={(e) => setElectionName(e.target.value)}
-                required
-              />
+          {!electionCreated ? (
+            <form onSubmit={handleCreateElection}>
+              <div className="form-group">
+                <label htmlFor="electionName">Election Name:</label>
+                <input
+                  type="text"
+                  id="electionName"
+                  className="form-control"
+                  value={electionName}
+                  onChange={(e) => setElectionName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="electionDescription">Election Description:</label>
+                <textarea
+                  id="electionDescription"
+                  className="form-control"
+                  value={electionDescription}
+                  onChange={(e) => setElectionDescription(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">Create Election</button>
+            </form>
+          ) : (
+            <div className="mt-4">
+              <h3>Election Details</h3>
+              <p><strong>Name:</strong> {electionName}</p>
+              <p><strong>Description:</strong> {electionDescription}</p>
             </div>
-            <div className="form-group">
-              <label htmlFor="electionDescription">Election Description:</label>
-              <textarea
-                id="electionDescription"
-                className="form-control"
-                value={electionDescription}
-                onChange={(e) => setElectionDescription(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary mt-3">Create Election</button>
-          </form>
+          )}
 
           {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
           {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
