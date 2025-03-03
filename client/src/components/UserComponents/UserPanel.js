@@ -6,6 +6,7 @@ import UserInstructions from "./UserInstructions";
 import VoterRegistration from "./VoterRegistration";
 import VotingArea from "./VotingArea";
 import Results from "./Results";
+import UserLobby from "./UserLobby";
 import "../../styles/Sidebar.css";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -67,7 +68,7 @@ const UserPanel = ({ setContractAddress }) => {
       navigate("/")
       logout()
     }, 2000);
-    
+
   }
   return (
     <>
@@ -88,9 +89,8 @@ const UserPanel = ({ setContractAddress }) => {
                 ].map((tab) => (
                   <li
                     key={tab}
-                    className={`list-group-item ${
-                      activeTab === tab ? "active" : ""
-                    }`}
+                    className={`list-group-item ${activeTab === tab ? "active" : ""
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}
@@ -104,16 +104,17 @@ const UserPanel = ({ setContractAddress }) => {
           {/* Main Content (80% width) */}
           <div className="col-md-9 col-lg-10">
             <div className="content p-3">
+              {activeTab === "lobby" && <UserLobby />}
               {activeTab === "Instructions" && <UserInstructions />}
               {activeTab === "Voter Registration" && <VoterRegistration />}
               {activeTab === "Voting Area" && <VotingArea />}
               {activeTab === "Results" && <Results candidates={[
-    { name: "Alice", votes: 120 },
-    { name: "Bob", votes: 95 },
-    { name: "Charlie", votes: 150 }
-  ]} 
-  electionStatus="completed" 
-/>}
+                { name: "Alice", votes: 120 },
+                { name: "Bob", votes: 95 },
+                { name: "Charlie", votes: 150 }
+              ]}
+                electionStatus="completed"
+              />}
             </div>
           </div>
         </div>
