@@ -5,6 +5,8 @@ contract Voting {
     address public admin;
     uint256 public candidateCount;
     uint256 public voterCount;
+    uint256 public verifiedVoterCount;
+    uint256 public votedVoterCount;
     bool public start;
     bool public end;
 
@@ -85,7 +87,14 @@ contract Voting {
 
     function verifyVoter(address voterAddress, bool _verifiedStatus) public onlyAdmin {
         require(voterDetails[voterAddress].isRegistered, "Voter not registered");
+        require(!voterDetails[voterAddress].isVerified, "Voter is already verified");
+
         voterDetails[voterAddress].isVerified = _verifiedStatus;
+        
+        if (_verifiedStatus) {
+            verifiedVoterCount++; // Increment verified voter count
+        }
+
         emit VoterVerified(voterAddress, _verifiedStatus);
     }
 
@@ -96,6 +105,8 @@ contract Voting {
 
         candidateDetails[candidateId].voteCount++;
         voterDetails[msg.sender].hasVoted = true;
+        votedVoterCount++; // Increment voted voter count
+
         emit VoteCast(msg.sender, candidateId);
     }
 
@@ -142,6 +153,18 @@ contract Voting {
 
     function getTotalVoter() public view returns (uint256) {
         return voterCount;
+    }
+
+    function getRegisteredVoterCount() public view returns (uint256) {
+        return voterCount;
+    }
+
+    function getVerifiedVoterCount() public view returns (uint256) {
+        return verifiedVoterCount;
+    }
+
+    function getVotedVoterCount() public view returns (uint256) {
+        return votedVoterCount;
     }
 
     function getResults() public view returns (Candidate[] memory) {
