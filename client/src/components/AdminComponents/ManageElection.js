@@ -199,7 +199,7 @@ const ManageElection = () => {
 
           {currentPhase === 'Registration' && electionCreated && (
             <div className="alert alert-warning mt-3">
-              Reminder: Please add candidates before starting the voting phase.
+              Reminder: Please add a minimum of 2 candidates before starting the voting phase.
             </div>
           )}
         </>
