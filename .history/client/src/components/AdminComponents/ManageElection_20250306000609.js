@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import VotingContract from "../../contracts/Voting.json";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+
 const ManageElection = () => {
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
@@ -140,9 +138,6 @@ const ManageElection = () => {
       const newPhase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(newPhase);
       setSuccessMessage(`Election phase changed to ${newPhase}`);
-      if (newPhase === "Election Ended") {
-        await sendElectionResultsToBackend();
-      }
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to change phase.");
@@ -171,7 +166,7 @@ const ManageElection = () => {
         winner,
         candidates: formattedCandidates,
       };
-      console.log(electionData, "frontend");
+      console.log(electionData);
       await axios.post(
         "http://localhost:5000/api/admin/storeElection",
         electionData

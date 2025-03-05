@@ -5,7 +5,7 @@ const {
 } = require("../controllers/controllers.admin"); // Ensure correct import
 const router = express.Router();
 //console.log(loginAdmin);
-console.log(storeElection);
+
 router.post("/login", loginAdmin);
-router.post("/storeElection", storeElection);
+router.post("/admin/storeElection", storeElection);
 module.exports = router;
