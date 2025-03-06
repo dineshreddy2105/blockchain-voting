@@ -1,20 +1,75 @@
 import { useEffect, useState, React } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 const ElectionDetails = () => {
   const [electionDetails, setElectionDetails] = useState([]);
-  const [selectedElection, setSelectedElection] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchElectionDetails = async () => {
       try {
-        // const res = await axios.get("http://api.example.com/candidates"); // Replace with your API URL
-        // setCandidates(res.data)
-        setElectionDetails([
-          { id: 1, name: "Election 1", description: "It is the 1st election" },
-          { id: 2, name: "Election 2", description: "It is the 2nd election" },
-          { id: 3, name: "Election 3", description: "It is the 3rd election" },
-          // Add more election details as needed
-        ]);
+        const res = await axios.get("http://localhost:5000/api/admin/getAllElections");
+        console.log(res.data);
+        setElectionDetails(res.data.elections);
+        // setElectionDetails([{
+        //   _id: "67c8a28b55830e6397eb4612",
+        //   electionName: "TS Election",
+        //   electionDescription: "dedewfewfesf",
+        //   winner: "Dinesh Reddy Valipi",
+        //   candidates: [
+        //     {
+        //       name: "Dinesh Reddy Valipi",
+        //       votes: 0,
+        //       _id: "67c8a28b55830e6397eb4613"
+        //     },
+        //     {
+        //       name: "Dinesh",
+        //       votes: 0,
+        //       _id: "67c8a28b55830e6397eb4614"
+        //     }
+        //   ],
+        //   createdAt: "2025-03-05T19:14:19.407Z"
+        // },
+        // {
+        //   _id: "67c8a76755830e6397eb4633",
+        //   electionName: "TS Election",
+        //   electionDescription: "This is assembly election",
+        //   winner: "Valipi Dinesh Reddy",
+        //   candidates: [
+        //     {
+        //       name: "Valipi Dinesh Reddy",
+        //       votes: 1,
+        //       _id: "67c8a76755830e6397eb4634"
+        //     },
+        //     {
+        //       name: "deepak",
+        //       votes: 0,
+        //       _id: "67c8a76755830e6397eb4635"
+        //     }
+        //   ],
+        //   createdAt: "2025-03-05T19:35:03.258Z"
+        // },
+        // {
+        //   _id: "67c92b387e26b0f5996e570a",
+        //   electionName: "Test Elections",
+        //   electionDescription: "testing done for voting process",
+        //   winner: "sathwik",
+        //   candidates: [
+        //     {
+        //       name: "Kartheek Bhai",
+        //       votes: 0,
+        //       _id: "67c92b387e26b0f5996e570b"
+        //     },
+        //     {
+        //       name: "sathwik",
+        //       votes: 1,
+        //       _id: "67c92b387e26b0f5996e570c"
+        //     }
+        //   ],
+        //   createdAt: "2025-03-06T04:57:28.571Z",
+        // }])
       } catch (error) {
         console.error("Error fetching election details:", error);
       }
@@ -24,7 +79,7 @@ const ElectionDetails = () => {
   }, []);
 
   const handleViewDetails = (election) => {
-    setSelectedElection(election);
+    navigate(`/election/${election._id}`, { state: { election } });
   };
 
   return (
@@ -38,16 +93,16 @@ const ElectionDetails = () => {
               className="col-md-4 mb-5 d-flex justify-content-around"
             >
               <div className="card shadow-sm" style={{ width: "18rem" }}>
-                <img
+                {/* <img
                   src="https://pixabay.com/vectors/elections-vote-sheet-paper-pen-536656/"
                   className="card-img-top"
                   alt="Dummy"
                   style={{ height: "200px", objectFit: "cover" }}
-                />
+                /> */}
                 <div className="card-body">
-                  <h5 className="card-title">{election.name}</h5>
+                  <h5 className="card-title">{election.electionName}</h5>
                   <p className="card-text">
-                    <strong>Description:</strong> {election.description}
+                    <strong>Description:</strong> {election.electionDescription}
                   </p>
                   <br></br>
                   <button
@@ -64,7 +119,7 @@ const ElectionDetails = () => {
           <p>No elections conducted</p>
         )}
       </div>
-      {selectedElection && (
+      {/* {selectedElection && (
         <div className="election-details mt-4">
           <h3>Selected Election Details</h3>
           <p>
@@ -73,8 +128,22 @@ const ElectionDetails = () => {
           <p>
             <strong>Description:</strong> {selectedElection.description}
           </p>
+          <h2 className="text-center mb-4">Election Results</h2>
+          <Row className="justify-content-center">
+            {candidates.map((candidate, index) => (
+              <Col key={index} md={4} className="mb-3">
+                <Card className={winner && winner.name === candidate.name ? "bg-success text-white" : ""}>
+                  <Card.Body>
+                    <Card.Title>{candidate.name}</Card.Title>
+                    <Card.Text>Votes: {candidate.votes}</Card.Text>
+                    {winner && winner.name === candidate.name && <strong>🏆 Winner</strong>}
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
