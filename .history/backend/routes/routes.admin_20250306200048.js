@@ -9,5 +9,4 @@ const router = express.Router();
 console.log(storeElection);
 router.post("/login", loginAdmin);
 router.post("/storeElection", storeElection);
-router.get("/getAllElections", getAllElections);
 module.exports = router;
