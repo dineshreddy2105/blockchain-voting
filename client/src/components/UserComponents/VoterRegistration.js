@@ -7,7 +7,7 @@ import { BlockchainContext } from "../../providers/BlockChainProvider";
 import { CircularProgress } from "@mui/material";
 
 const VoterRegistration = () => {
-  const [aadhaarNumber, setAadhaarNumber] = useState("");
+  const [aadhaarNumber, setAadhaarNumber] = useState(localStorage.getItem("aadhar"));
   const [name, setName] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -122,7 +122,7 @@ const VoterRegistration = () => {
               value={aadhaarNumber}
               onChange={(e) => setAadhaarNumber(e.target.value)}
               required
-              disabled={isRegistered}
+              disabled
             />
           </div>
           <div className="form-group">

@@ -31,9 +31,9 @@ function App() {
                 <Route path="/sign-in" element={<UserLoginPage />} />
                 <Route path="/admin-signin" element={<AdminLoginPage />} />
                 <Route path="/sign-up" element={<UserSignUpPage />} />
+                <Route path="/user_panel" element={<UserPanel />} />
 
                 <Route element={<VoterProtectedRoute />}>
-                  <Route path="/user_panel" element={<UserPanel />} />
                   <Route path="/user_lobby" element={<UserLobby />} />
                 </Route>
 
