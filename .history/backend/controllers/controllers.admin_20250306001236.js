@@ -45,11 +45,11 @@ const loginAdmin = async (req, res) => {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };
-const storeElection = async (req, res) => {
-  //console.log("hello", electionDescription, "backend");
+const storeElectionResults = async (req, res) => {
+  console.log("hello", electionDescription, "backend");
   try {
     const { electionName, electionDescription, winner, candidates } = req.body;
-    //console.log("hello", electionDescription, "backend");
+    console.log("hello", electionDescription, "backend");
     // Validate required fields
     if (!electionName || !winner || !candidates) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -71,4 +71,4 @@ const storeElection = async (req, res) => {
   }
 };
 
-module.exports = { loginAdmin, storeElection };
+module.exports = { loginAdmin, storeElectionResults };

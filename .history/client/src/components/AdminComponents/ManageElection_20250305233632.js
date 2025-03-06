@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
-import VotingContract from "../../contracts/Voting.json";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import VotingContract from "../../contracts/Voting.json";
+import { toast, ToastContainer } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+
 const ManageElection = () => {
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
@@ -51,11 +52,9 @@ const ManageElection = () => {
         setContract(contractInstance);
         setAccount(accounts[0]);
 
-        // Fetch current phase
         const phase = await contractInstance.methods.getCurrentPhase().call();
         setCurrentPhase(phase);
 
-        // Fetch election details
         const election = await contractInstance.methods
           .electionDetails()
           .call();
@@ -75,48 +74,6 @@ const ManageElection = () => {
     }
   };
 
-  const handleConnectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        setErrorMessage("");
-        loadBlockchainData();
-      } catch (error) {
-        setErrorMessage("Connection to MetaMask was denied.");
-      }
-    } else {
-      setErrorMessage(
-        "MetaMask is not installed. Please install it to proceed."
-      );
-    }
-  };
-
-  const handleCreateElection = async (e) => {
-    e.preventDefault();
-    if (!contract || !account) {
-      setErrorMessage("Please connect MetaMask before creating an election.");
-      return;
-    }
-    try {
-      await contract.methods
-        .createElection(electionName, electionDescription)
-        .send({ from: account });
-      setSuccessMessage("Election created successfully!");
-      setElectionCreated(true);
-
-      // Fetch updated election details
-      const election = await contract.methods.electionDetails().call();
-      setElectionName(election.electionName);
-      setElectionDescription(election.description);
-
-      const phase = await contract.methods.getCurrentPhase().call();
-      setCurrentPhase(phase);
-    } catch (error) {
-      console.error(error);
-      setErrorMessage("Failed to create election.");
-    }
-  };
-
   const handleChangePhase = async () => {
     if (!contract || !account) {
       setErrorMessage(
@@ -126,20 +83,18 @@ const ManageElection = () => {
     }
 
     try {
-      // Fetch the admin address from the contract
       const adminAddress = await contract.methods.admin().call();
 
-      // Check if the connected account is the admin
       if (account.toLowerCase() !== adminAddress.toLowerCase()) {
         setErrorMessage("Only the election admin can change the phase.");
         return;
       }
 
-      // Proceed with changing the phase
       await contract.methods.changePhase().send({ from: account });
       const newPhase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(newPhase);
       setSuccessMessage(`Election phase changed to ${newPhase}`);
+
       if (newPhase === "Election Ended") {
         await sendElectionResultsToBackend();
       }
@@ -148,6 +103,7 @@ const ManageElection = () => {
       setErrorMessage("Failed to change phase.");
     }
   };
+
   const sendElectionResultsToBackend = async () => {
     try {
       console.log("Fetching election details...");
@@ -171,64 +127,42 @@ const ManageElection = () => {
         winner,
         candidates: formattedCandidates,
       };
-      console.log(electionData, "frontend");
+
       await axios.post(
         "http://localhost:5000/api/admin/storeElection",
         electionData
       );
 
       console.log("Election results successfully sent to backend.");
-      toast.success("Election results successfully stored! 🎉");
+      toast.success("Election results successfully stored! 🎉"); // Show success toast
     } catch (error) {
       console.error("Error sending election results:", error);
       toast.error("Failed to store election results. Please try again.");
     }
   };
+
   return (
     <div className="container">
+      <ToastContainer /> {/* Toast container for notifications */}
       <h2>Manage Election</h2>
-
       {!account && (
         <div className="alert alert-warning">
           <p>{errorMessage || "Please connect to MetaMask to proceed."}</p>
-          <button className="btn btn-warning" onClick={handleConnectWallet}>
+          <button
+            className="btn btn-warning"
+            onClick={() =>
+              window.ethereum
+                .request({ method: "eth_requestAccounts" })
+                .then(loadBlockchainData)
+            }
+          >
             Connect MetaMask
           </button>
         </div>
       )}
-
       {account && (
         <>
-          {!electionCreated ? (
-            <form onSubmit={handleCreateElection}>
-              <div className="form-group">
-                <label htmlFor="electionName">Election Name:</label>
-                <input
-                  type="text"
-                  id="electionName"
-                  className="form-control"
-                  value={electionName}
-                  onChange={(e) => setElectionName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="electionDescription">
-                  Election Description:
-                </label>
-                <textarea
-                  id="electionDescription"
-                  className="form-control"
-                  value={electionDescription}
-                  onChange={(e) => setElectionDescription(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn btn-primary mt-3">
-                Create Election
-              </button>
-            </form>
-          ) : (
+          {electionCreated && (
             <div className="mt-4">
               <h3>Election Details</h3>
               <p>
@@ -260,13 +194,6 @@ const ManageElection = () => {
                   {currentPhase === "Results" && "End Election"}
                 </button>
               )}
-            </div>
-          )}
-
-          {currentPhase === "Registration" && electionCreated && (
-            <div className="alert alert-warning mt-3">
-              Reminder: Please add a minimum of 2 candidates before starting the
-              voting phase.
             </div>
           )}
         </>

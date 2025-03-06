@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import axios from "axios";
 import VotingContract from "../../contracts/Voting.json";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+
 const ManageElection = () => {
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
@@ -51,11 +52,9 @@ const ManageElection = () => {
         setContract(contractInstance);
         setAccount(accounts[0]);
 
-        // Fetch current phase
         const phase = await contractInstance.methods.getCurrentPhase().call();
         setCurrentPhase(phase);
 
-        // Fetch election details
         const election = await contractInstance.methods
           .electionDetails()
           .call();
@@ -75,48 +74,6 @@ const ManageElection = () => {
     }
   };
 
-  const handleConnectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        setErrorMessage("");
-        loadBlockchainData();
-      } catch (error) {
-        setErrorMessage("Connection to MetaMask was denied.");
-      }
-    } else {
-      setErrorMessage(
-        "MetaMask is not installed. Please install it to proceed."
-      );
-    }
-  };
-
-  const handleCreateElection = async (e) => {
-    e.preventDefault();
-    if (!contract || !account) {
-      setErrorMessage("Please connect MetaMask before creating an election.");
-      return;
-    }
-    try {
-      await contract.methods
-        .createElection(electionName, electionDescription)
-        .send({ from: account });
-      setSuccessMessage("Election created successfully!");
-      setElectionCreated(true);
-
-      // Fetch updated election details
-      const election = await contract.methods.electionDetails().call();
-      setElectionName(election.electionName);
-      setElectionDescription(election.description);
-
-      const phase = await contract.methods.getCurrentPhase().call();
-      setCurrentPhase(phase);
-    } catch (error) {
-      console.error(error);
-      setErrorMessage("Failed to create election.");
-    }
-  };
-
   const handleChangePhase = async () => {
     if (!contract || !account) {
       setErrorMessage(
@@ -126,20 +83,18 @@ const ManageElection = () => {
     }
 
     try {
-      // Fetch the admin address from the contract
       const adminAddress = await contract.methods.admin().call();
 
-      // Check if the connected account is the admin
       if (account.toLowerCase() !== adminAddress.toLowerCase()) {
         setErrorMessage("Only the election admin can change the phase.");
         return;
       }
 
-      // Proceed with changing the phase
       await contract.methods.changePhase().send({ from: account });
       const newPhase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(newPhase);
       setSuccessMessage(`Election phase changed to ${newPhase}`);
+
       if (newPhase === "Election Ended") {
         await sendElectionResultsToBackend();
       }
@@ -148,6 +103,7 @@ const ManageElection = () => {
       setErrorMessage("Failed to change phase.");
     }
   };
+
   const sendElectionResultsToBackend = async () => {
     try {
       console.log("Fetching election details...");
@@ -171,7 +127,7 @@ const ManageElection = () => {
         winner,
         candidates: formattedCandidates,
       };
-      console.log(electionData, "frontend");
+      console.log(electionData);
       await axios.post(
         "http://localhost:5000/api/admin/storeElection",
         electionData
