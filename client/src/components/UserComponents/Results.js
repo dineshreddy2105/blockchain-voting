@@ -1,19 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { BlockchainContext } from "../../providers/BlockChainProvider";
 
-const Results = ({ candidates, electionStatus }) => {
+const Results = () => {
+  const { contractInstance } = useContext(BlockchainContext); // Get smart contract instance
   const [loading, setLoading] = useState(true);
+  const [electionStatus, setElectionStatus] = useState("");
+  const [candidates, setCandidates] = useState([]);
   const [winner, setWinner] = useState(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      if (candidates && candidates.length > 0) {
-        const maxVotes = Math.max(...candidates.map(c => c.votes));
-        setWinner(candidates.find(c => c.votes === maxVotes));
+    const fetchResults = async () => {
+      if (!contractInstance) {
+        console.error("Smart contract not connected");
+        setLoading(false);
+        return;
       }
-    }, 2000); // Simulating slow internet delay
-  }, [candidates]);
+
+      try {
+        setLoading(true);
+
+        // console.log("contractInstance", contractInstance.methods);
+        const phase = await contractInstance.methods.getCurrentPhase().call();
+        setElectionStatus(phase.toLowerCase()); // Normalize to lowercase
+
+        // Fetch candidates and votes only if election is in result phase
+        if (phase.toLowerCase() === "results") {
+          const candidatesData = await contractInstance.methods.getCandidates().call();
+          const formattedCandidates = candidatesData.map((candidate) => ({
+            name: candidate.candidateName,
+            votes: parseInt(candidate.voteCount),
+          }));
+          setCandidates(formattedCandidates);
+
+          // Determine winner if candidates exist
+          if (formattedCandidates.length > 0) {
+            const maxVotes = Math.max(...formattedCandidates.map((c) => c.votes));
+            setWinner(formattedCandidates.find((c) => c.votes === maxVotes));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching election results:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults(); // Fetch results only once when component mounts
+  }, [contractInstance]);
 
   if (loading) {
     return (
@@ -24,15 +58,16 @@ const Results = ({ candidates, electionStatus }) => {
     );
   }
 
-  if (!candidates || candidates.length === 0) {
+  if (electionStatus === "election ended") {
     return (
       <Container className="text-center my-5">
-        <p>No candidates available. Election might not have started.</p>
+        <h2>🏁 Election Ended 🏁</h2>
+        <p>The election has officially ended. Thank you for participating!</p>
       </Container>
     );
   }
 
-  if (electionStatus !== "completed") {
+  if (electionStatus !== "results") {
     return (
       <Container className="text-center my-5">
         <p>Election is not yet completed. Please wait for results.</p>

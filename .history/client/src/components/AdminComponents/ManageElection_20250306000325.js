@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import VotingContract from "../../contracts/Voting.json";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+
 const ManageElection = () => {
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
@@ -140,50 +138,12 @@ const ManageElection = () => {
       const newPhase = await contract.methods.getCurrentPhase().call();
       setCurrentPhase(newPhase);
       setSuccessMessage(`Election phase changed to ${newPhase}`);
-      if (newPhase === "Election Ended") {
-        await sendElectionResultsToBackend();
-      }
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to change phase.");
     }
   };
-  const sendElectionResultsToBackend = async () => {
-    try {
-      console.log("Fetching election details...");
 
-      const electionDetails = await contract.methods.electionDetails().call();
-      const candidatesData = await contract.methods.getCandidates().call();
-
-      const formattedCandidates = candidatesData.map((c) => ({
-        name: c.candidateName,
-        votes: parseInt(c.voteCount),
-      }));
-
-      const maxVotes = Math.max(...formattedCandidates.map((c) => c.votes));
-      const winner =
-        formattedCandidates.find((c) => c.votes === maxVotes)?.name ||
-        "No winner";
-
-      const electionData = {
-        electionName: electionDetails[0],
-        electionDescription: electionDetails[1],
-        winner,
-        candidates: formattedCandidates,
-      };
-      console.log(electionData, "frontend");
-      await axios.post(
-        "http://localhost:5000/api/admin/storeElection",
-        electionData
-      );
-
-      console.log("Election results successfully sent to backend.");
-      toast.success("Election results successfully stored! 🎉");
-    } catch (error) {
-      console.error("Error sending election results:", error);
-      toast.error("Failed to store election results. Please try again.");
-    }
-  };
   return (
     <div className="container">
       <h2>Manage Election</h2>

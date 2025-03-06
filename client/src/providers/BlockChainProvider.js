@@ -44,6 +44,9 @@ const BlockchainProvider = ({ children }) => {
         }
     };
 
+    useEffect(() => {
+        initWeb3(); // Call initWeb3 when provider mounts
+    }, []);
 
     // Fetch Election Details
     // useEffect(() => {

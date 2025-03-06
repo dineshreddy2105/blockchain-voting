@@ -32,10 +32,10 @@ const UserLobby = () => {
     useEffect(() => {
         const fetchElectionDetails = async () => {
             if (!contractInstance) return;
-
+            
             try {
                 const details = await contractInstance.methods.electionDetails().call();
-
+                
                 if (details.electionName) {
                     setElectionName(details.electionName);
                     setElectionDescription(details.description);
@@ -47,22 +47,10 @@ const UserLobby = () => {
                 console.error("Error fetching election details:", error);
             }
         };
-        if (contractInstance) fetchElectionDetails();
+        if(contractInstance)
+            fetchElectionDetails();
     }, [contractInstance]);
 
-    // return (
-    //     <div className="flex justify-center items-center h-screen bg-gray-100 my-5 mx-3">
-    //         {isElectionCreated ? (
-    //             <ElectionDetails
-    //                 name={electionName}
-    //                 description={electionDescription}
-    //                 onNavigate={() => navigate("/user_panel")}
-    //             />
-    //         ) : (
-    //             <div className=" shadow-lg rounded-lg p-6 text-center">
-    //                 <h3 className="text-xl font-semibold text-gray-800">No active election found.</h3>
-    //             </div>
-    //         )}
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
             {isElectionCreated ? (
@@ -73,9 +61,7 @@ const UserLobby = () => {
                 />
             ) : (
                 <div className="shadow-lg rounded-lg p-6 text-center bg-white">
-                    <h3 className="text-xl font-semibold text-gray-800">
-                        No active election found.
-                    </h3>
+                    <h3 className="text-xl font-semibold text-gray-800">No active election found.</h3>
                 </div>
             )}
         </div>

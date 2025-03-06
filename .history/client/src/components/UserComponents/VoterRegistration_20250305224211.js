@@ -137,16 +137,6 @@ const VoterRegistration = () => {
               disabled={isRegistered}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="account">MetaMask Address:</label>
-            <input
-              type="text"
-              id="account"
-              className="form-control"
-              value={account || "Not connected"}
-              readOnly
-            />
-          </div>
           <button
             type="submit"
             className="btn btn-primary mt-3"

@@ -46,10 +46,10 @@ const loginAdmin = async (req, res) => {
   }
 };
 const storeElection = async (req, res) => {
-  //console.log("hello", electionDescription, "backend");
+  console.log("hello", electionDescription, "backend");
   try {
     const { electionName, electionDescription, winner, candidates } = req.body;
-    //console.log("hello", electionDescription, "backend");
+    console.log("hello", electionDescription, "backend");
     // Validate required fields
     if (!electionName || !winner || !candidates) {
       return res.status(400).json({ message: "Missing required fields" });

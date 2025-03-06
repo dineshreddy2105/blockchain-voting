@@ -171,7 +171,7 @@ const ManageElection = () => {
         winner,
         candidates: formattedCandidates,
       };
-      console.log(electionData, "frontend");
+      console.log(electionData);
       await axios.post(
         "http://localhost:5000/api/admin/storeElection",
         electionData
