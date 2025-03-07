@@ -76,12 +76,19 @@ contract Voting {
         candidateCount++;
     }
 
+    mapping(bytes32 => address) public aadhaarToAddress;
     function registerVoter(string memory _name, string memory _aadhaar) public {
-        require(!voterDetails[msg.sender].isRegistered, "Voter already registered");
         bytes32 aadhaarHash = keccak256(abi.encodePacked(_aadhaar));
+
+        require(voterDetails[msg.sender].isRegistered == false, "Voter already registered.");
+        require(aadhaarToAddress[aadhaarHash] == address(0), "This Aadhaar is already registered with another account.");
+
         voterDetails[msg.sender] = Voter(msg.sender, _name, aadhaarHash, false, false, true);
+        aadhaarToAddress[aadhaarHash] = msg.sender; // Link Aadhaar to Ethereum address
+
         voters.push(msg.sender);
         voterCount++;
+
         emit VoterRegistered(msg.sender, _name);
     }
 

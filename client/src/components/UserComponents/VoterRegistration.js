@@ -64,15 +64,30 @@ const VoterRegistration = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setLoadingVerify(true);
+  
     try {
+      // Fetch the Ethereum address linked to this Aadhaar number
+    const aadhaarHash = Web3.utils.keccak256(aadhaarNumber);
+    const linkedAddress = await contractInstance.methods.aadhaarToAddress(aadhaarHash).call();
+
+    // If the Aadhaar is linked to another address, show error and stop registration
+    if (linkedAddress !== "0x0000000000000000000000000000000000000000" && linkedAddress !== account) {
+      showToast("This Aadhaar number is already registered with a different MetaMask account.", "error");
+      setLoadingVerify(false);
+      return;
+    }
+  
       await axios.post("http://localhost:5000/api/users/verifyOTP", {
         aadhar_no: aadhaarNumber,
         otp,
       });
+  
       showToast("OTP Verified!", "success");
+  
       await contractInstance.methods
         .registerVoter(name, aadhaarNumber)
         .send({ from: account, gas: 1000000 });
+  
       setSuccessMessage("Voter registered successfully!");
       setOtpSent(false);
       setErrorMessage("");
@@ -82,13 +97,12 @@ const VoterRegistration = () => {
       fetchVoterStatus();
     } catch (error) {
       setErrorMessage("Registration failed. Please try again.");
-      showToast(
-        error.response?.data?.message || "Failed to verify OTP",
-        "error"
-      );
+      showToast(error.response?.data?.message || "Failed to verify OTP", "error");
     }
+  
     setLoadingVerify(false);
   };
+  
 
   return (
     <div className="container">
